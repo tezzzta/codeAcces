@@ -1,4 +1,5 @@
 import { View, Text, Image, Platform, StyleSheet, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Persona {
   nombre: string;
@@ -22,7 +23,7 @@ export default function Perfil() {
   const imageSize = Platform.OS === 'web' ? 250 : 150;
 
   return (
-    <View className="flex-1 bg-[#221D1D] p-6 ">
+    <View className="flex-1 bg-[#04020a] p-6 ">
       <Text className="text-white text-4xl font-semibold text-center mb-4 mt-5">
         {people.nombre}
       </Text>
@@ -41,7 +42,7 @@ export default function Perfil() {
         <Text className="text-white mt-2 text-lg">ID de cuenta: #{people.id}</Text>
       </View>
 
-      <View className={Platform.OS == 'web' ?"bg-[#2A2A2A] rounded-xl p-4 space-y-2 mx-[20%]":"bg-[#2A2A2A] rounded-xl p-4 space-y-2"}>
+      <View className={Platform.OS == 'web' ?"bg-[#0a0814] rounded-xl p-4 space-y-2 mx-[20%]":"bg-[#0a0814] rounded-xl p-4 space-y-2"}>
         <Text className='text-[22px] text-white m-auto mb-4'> Información de la cuenta </Text>
         <Info label="Contacto" value={people.contacto.toString()} />
         <Info label="Ubicación" value={people.ubicacion} />
@@ -51,21 +52,40 @@ export default function Perfil() {
           value={people.fecha_creacion.toLocaleDateString()}
         />
       </View>
-          <View className='mx-auto my-[40px]'>
-<Pressable >
-          {({ pressed }) => (
-            <Text
-              className={
-                pressed
-                  ? 'text-5xl text-white bg-[#720000] py-3 px-6 rounded-2xl'
-                  : 'text-5xl text-white bg-[#2F0000] py-3 px-6 rounded-2xl'
-              }
-            >
-              Settings 
-            </Text>
-          )}
-        </Pressable>
-          </View>
+          
+
+
+
+          <View className="flex justify-center items-center pb-10 mt-10">
+                 
+                         <Pressable >
+          
+                            {({ pressed }) => (
+                                <LinearGradient
+                                  colors={
+                                    pressed
+                                      ? ['#3336e6', '#3336e6', '#3336e6']
+                                      : ['#ea5818', '#d846ef', '#5346e6']
+                                  }
+                                  start={{ x: 0, y: 0 }}
+                                  end={{ x: 1, y: 0 }}
+                                  className={
+                                    Platform.OS === 'web'
+                                      ? 'text-5xl text-white py-3 px-6 rounded-2xl'
+                                      : 'text-5xl text-white py-3 px-6 rounded-2xl'
+                                  }
+                                  style={{ borderRadius: 20 }}
+                                >
+                    
+                      <Text className='text-white text-5xl'> 
+                        Settings
+                      </Text>
+                    
+                                        </LinearGradient>
+                                        )}
+                  </Pressable>
+          
+                </View>
      </View>
   );
 }

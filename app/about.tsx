@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Guest {
   nombre: string;
@@ -25,7 +26,7 @@ export default function AccessForm() {
       ...prev,
       { nombre: '', apellido: '', documento: '', desde: '', hasta: '' },
     ]);
-    setErrors((prev) => [...prev, {}]); // agregar error vacío para ese invitado
+    setErrors((prev) => [...prev, {}]); 
   };
 
   const updateGuest = (index: number, field: keyof Guest, value: string): void => {
@@ -63,26 +64,24 @@ export default function AccessForm() {
 
     const hasErrors = newErrors.some((e) => Object.keys(e).length > 0);
     if (hasErrors) return;
-
-    // Aquí podrías enviar los datos a una API, guardar, etc.
+  
+    // OJO ACAAAAAAAAAAAA PODEMOS ENVIAR TODO    
     alert('Formulario válido. Invitaciones creadas.');
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#221D1D] px-4 pt-10">
+    <ScrollView className="flex-1 bg-[#04020a] px-4 pt-10">
       <Text className="text-[#F5F5F5] text-3xl font-semibold text-center mb-6" >
         Nuevo acceso
       </Text>
 
-      {/* Campo motivo */}
       <Text className={Platform.OS == 'web'? "text-white text-lg mb-2 mx-auto font-semibold": "text-white text-lg mb-1"}>Motivo de la visita</Text>
       <TextInput
         placeholder="Ej. Entrega de documentos"
         placeholderTextColor="#888"
-        className={Platform.OS == 'web'? "bg-[#2a2a2a] text-white p-3 rounded mb-6 w-[50%] mx-auto": "bg-[#2a2a2a] text-white p-3 rounded mb-6"}
+        className={Platform.OS == 'web'? "bg-[#1a1a2e] text-white p-3 rounded mb-6 w-[50%] mx-auto": "bg-[#1a1a2e] text-white p-3 rounded mb-6"}
       />
 
-      {/* Botón Agregar invitado */}
       <Pressable onPress={addGuest} className={Platform.OS == 'web' ?"flex-row items-center space-x-2 mb-4  mx-auto":"flex-row items-center space-x-2 mb-4 mx-auto"}>
         {Platform.OS === 'web' ? (
           <>
@@ -94,9 +93,8 @@ export default function AccessForm() {
         )}
       </Pressable>
 
-      {/* Campos por invitado */}
       {guests.map((guest, index) => (
-        <View key={index} className="mb-6 p-4 rounded bg-[#2a2a2a] space-y-2">
+        <View key={index} className="mb-6 p-4 rounded bg-[#0a0814] space-y-2">
           <Text className="text-white font-semibold mb-2">
             Invitado #{index + 1}
           </Text>
@@ -106,7 +104,7 @@ export default function AccessForm() {
             placeholderTextColor="#aaa"
             value={guest.nombre}
             onChangeText={(text) => updateGuest(index, 'nombre', text)}
-            className="bg-[#3a3a3a] text-white p-2 rounded my-1"
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
 
           <TextInput
@@ -114,7 +112,7 @@ export default function AccessForm() {
             placeholderTextColor="#aaa"
             value={guest.apellido}
             onChangeText={(text) => updateGuest(index, 'apellido', text)}
-            className="bg-[#3a3a3a] text-white p-2 rounded my-1"
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
 
           <TextInput
@@ -122,7 +120,7 @@ export default function AccessForm() {
             placeholderTextColor="#aaa"
             value={guest.documento}
             onChangeText={(text) => updateGuest(index, 'documento', text)}
-            className="bg-[#3a3a3a] text-white p-2 rounded my-1"
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
           {errors[index]?.documento && (
             <Text className="text-red-500">{errors[index].documento}</Text>
@@ -133,7 +131,7 @@ export default function AccessForm() {
             placeholderTextColor="#aaa"
             value={guest.desde}
             onChangeText={(text) => updateGuest(index, 'desde', text)}
-            className="bg-[#3a3a3a] text-white p-2 rounded my-1"
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
           {errors[index]?.desde && (
             <Text className="text-red-500">{errors[index].desde}</Text>
@@ -144,7 +142,7 @@ export default function AccessForm() {
             placeholderTextColor="#aaa"
             value={guest.hasta}
             onChangeText={(text) => updateGuest(index, 'hasta', text)}
-            className="bg-[#3a3a3a] text-white p-2 rounded my-1"
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
           {errors[index]?.hasta && (
             <Text className="text-red-500">{errors[index].hasta}</Text>
@@ -153,20 +151,37 @@ export default function AccessForm() {
       ))}
 
       <View className="flex justify-center items-center pb-10 mt-10">
-        <Pressable onPress={handleSubmit}>
-          {({ pressed }) => (
-            <Text
-              className={
-                pressed
-                  ? 'text-5xl text-white bg-[#720000] py-3 px-6 rounded-2xl'
-                  : 'text-5xl text-white bg-[#2F0000] py-3 px-6 rounded-2xl'
-              }
-            >
+       
+               <Pressable onPress={handleSubmit}>
+
+                  {({ pressed }) => (
+                      <LinearGradient
+                        colors={
+                          pressed
+                            ? ['#3336e6', '#3336e6', '#3336e6']
+                            : ['#ea5818', '#d846ef', '#5346e6']
+                        }
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        className={
+                          Platform.OS === 'web'
+                            ? 'flex-row items-center space-x-2 rounded-3xl px-8 py-3'
+                            : 'flex-row items-center space-x-2 rounded-3xl px-4 py-3'
+                        }
+                        style={{ borderRadius: 20 }}
+                      >
+          
+            <Text className='text-white text-5xl'> 
               Crear
             </Text>
-          )}
+          
+                              </LinearGradient>
+                              )}
         </Pressable>
+
       </View>
+      
+      
     </ScrollView>
   );
 }
