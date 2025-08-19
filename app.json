@@ -4,6 +4,8 @@
     "slug": "my-expo-app",
     "version": "1.0.0",
     "web": {
+      "build": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.png"
     },
     "experiments": {
@@ -31,6 +33,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.anonymous.myexpoapp"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "41d8acf0-301f-4339-be2a-9b42e6025097"
       }
     }
   }
