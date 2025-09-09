@@ -1,5 +1,8 @@
 import { View, Text, Image, Platform, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import {estadoUsuario} from "../store/state"
+
+
 
 interface Persona {
   nombre: string;
@@ -9,15 +12,8 @@ interface Persona {
   documento: number;
   fecha_creacion: Date;
 }
-// datos en primera instancia, debo cambiarlos desp
-const people: Persona = {
-  nombre: 'Alejandro',
-  id: 1,
-  contacto: 3001234567,
-  ubicacion: 'Torre 5 - Apto 302',
-  documento: 1020304050,
-  fecha_creacion: new Date(),
-};
+// estado
+const people = estadoUsuario.getState()
 
 export default function Perfil() {
   const imageSize = Platform.OS === 'web' ? 250 : 150;
@@ -25,7 +21,7 @@ export default function Perfil() {
   return (
     <View className="flex-1 bg-[#04020a] p-6 ">
       <Text className="text-white text-4xl font-semibold text-center mb-4 mt-5">
-        {people.nombre}
+        {people.nickname}
       </Text>
 
       <View className="items-center mb-6">
@@ -49,7 +45,7 @@ export default function Perfil() {
         <Info label="Documento" value={people.documento.toString()} />
         <Info
           label="Fecha de creación"
-          value={people.fecha_creacion.toLocaleDateString()}
+          value={people.fechaCreacion}
         />
       </View>
           

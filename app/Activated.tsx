@@ -31,7 +31,7 @@ const usuariosActivosData = [
 ];
 
 export default function UsuariosActivos() {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | " ">(" ");
 
   const renderItem = ({ item }: { item: typeof usuariosActivosData[0] }) => {
     const isExpanded = expanded === item.id;
@@ -64,7 +64,7 @@ export default function UsuariosActivos() {
         ) : null}
 
         <Pressable
-          onPress={() => setExpanded(isExpanded ? null : item.id)}
+          onPress={() => setExpanded(isExpanded ? " " : item.id)}
           className="bg-[#1a1a2e] py-2 px-3 rounded-lg mt-2 self-start"
         >
           <Text className="text-white font-bold">

@@ -1,16 +1,142 @@
 import { View, Text, Pressable, Platform } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import RNPickerSelect from 'react-native-picker-select';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { estadoUsuario, estadoAccesos, estadoLogin} from "../store/state"
 
 
+ export default function Index() {
+   const user_id = estadoUsuario((state)=> state.id)
+  const people = estadoUsuario.getState()
 
-export default function Index() {
+  const documento = estadoUsuario((state)=>state.documento)
+  const isLogin = estadoLogin((state) => state.isLoggedIn)
+  const setUsuario =  estadoUsuario((state) => state.setUsuario)
+
+ useEffect(() => {
+   if (isLogin) {
+     const fetchEstado = async () => {
+       console.log("primer console",isLogin)
+       try {
+        console.log(documento)
+         const resultado = await fetch(
+           `http://localhost:3000/api/access/checkUser`,
+           { method: "POST",
+             credentials: "include",
+             headers: { "Content-Type": "application/json" },
+             body:  JSON.stringify({ documento })
+            }
+           
+         );
+         const datos = await resultado.json();
+         console.log(datos)
+         const res = datos.data
+         if (datos?.data) {
+           setUsuario(res);
+           try{
+              console.log(people)
+           }catch{}
+         }
+       } catch (err) {
+         console.error("Error en fetchEstado:", err);
+       }
+     };
+     fetchEstado();
+    }
+ }, [isLogin]);
+  
+
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState(" ");
+
+
+const accesos = estadoAccesos((state)=> state.accesos)
+const setAccesos = estadoAccesos((state)=> state.setAccesos)
+
+//
+///
+///
+///
+///
+//
+//
+//
+   //En este apartado haremos las funciones para hacer fetch y obenter los datos de las otras vistas
+ const firstFetch = async() => {
+  try{
+       const resultado = await fetch('http://localhost:3000/api/access/',
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {"Conten-type": "aplication/json"},
+        body:JSON.stringify({
+          
+        })
+      }
+    )
+
+  }catch{
+
+  }
+ }
+ const secondFetch = async() => {
+  try{
+   const resultado = await fetch('http://localhost:3000/api/access/',
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {"Conten-type": "aplication/json"},
+        body:JSON.stringify({
+          
+        })
+      }
+    )
+
+  }catch{
+    
+  }
+  }
+
+  const threFetch = async() => {
+     console.log("PRRRRRR",user_id)
+
+    try{
+
+     const resultado = await fetch('http://localhost:3000/api/access/allByUser',
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {"Content-type": "application/json"},
+        body:JSON.stringify({
+          user_id: user_id
+        })
+      }
+    );
+    const json = await resultado.json()
+    setAccesos(json)
+    console.log(accesos)
+  }catch(err){
+       console.log("error mi negro")
+        console.error("Error en threFetch:", err);    
+  }
+ }
+
+
+ 
+
+
+  ////
+  ///
+  //
+  //
+  //
+  //
+//
+//
+//
 
   return (
     <View className="flex-1 bg-[#04020a]">
@@ -66,11 +192,17 @@ export default function Index() {
             <RNPickerSelect
               onValueChange={(value) => {
                 setSelectedLanguage(value);
+                //EN ESTOS MISMOS IF, CREO QUE PUEDO HACER FETCH
                 if (value === 'go') {
                   router.push('/about');
                 }
                 if(value=== 'js'){
                   router.push('/history')
+                  console.log("ejecutando")
+                  console.log(user_id)
+                   if (user_id) {
+                       threFetch();
+                    }
 
                 }
                 if(value==='py'){
@@ -82,7 +214,7 @@ export default function Index() {
                 { label: 'Visitantes activos', value: 'py' },
                 { label: 'Nuevo acceso', value: 'go' },
               ]}
-              placeholder={{ label: 'Revisa Accesos', value: null }}
+              placeholder={{ label: 'Revisa Accesos', value: " " }}
               style={{
                 inputIOS: {
                   color: '#F5F5F5',
@@ -119,6 +251,8 @@ export default function Index() {
         </LinearGradient>
       </View>
 
+
+ {/* Parte de abajo xd  */}
       <View className="flex-row items-center justify-center gap-10 mb-[10%]">
         <Link href="/history" asChild>
           <Pressable>

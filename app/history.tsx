@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, FlatList, Platform } from "react-native";
+import { estadoAccesos } from "store/state";
 
-// Esto es temporal: luego se conecta a la BD
+
+
+ // Esto es temporal: luego se conecta a la BD
 const historialData = [
   {
     id: "1",
@@ -32,23 +35,25 @@ const historialData = [
 ];
 
 export default function HistorialAccesos() {
+  const accesos = estadoAccesos((state) => state.accesos)
+
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const renderItem = ({ item }: { item: typeof historialData[0] }) => {
+  const renderItem = ({ item }: { item: typeof accesos[0] }) => {
     const isExpanded = expanded === item.id;
 
     return (
       <View className="bg-[#0a0814] p-4 rounded-xl mb-3">
         
         <Text className="text-white font-bold text-base">{item.fecha}</Text>
-        <Text className="text-gray-300 text-sm mt-1">Motivo: {item.motivo}</Text>
+        <Text className="text-gray-300 text-sm mt-1">Motivo: {item.motivo_ingreso}</Text>
         {Platform.OS === "web" ? (
           <Text className="text-gray-300 text-sm mt-1">
-            Responsable: {item.nombre} - {item.documento}
+            Responsable: {item.user_id} - {item.inv_documento}
           </Text>
         ) : (
           <Text className="text-gray-300 text-sm mt-1">
-            Responsable: {item.nombre}
+            Responsable: {item.inv_name}
           </Text>
         )}
 
@@ -64,21 +69,21 @@ export default function HistorialAccesos() {
         {isExpanded && (
           <View className="mt-2">
             <Text className="text-gray-300 text-sm">Contacto: {item.contacto}</Text>
-            <Text className="text-gray-300 text-sm">Hora Apertura: {item.horaApertura}</Text>
-            <Text className="text-gray-300 text-sm">Hora Cierre: {item.horaCierre}</Text>
-            <Text className="text-gray-300 text-sm">Documento: {item.documento}</Text>
+            <Text className="text-gray-300 text-sm">Hora Apertura: {item.fecha}</Text>
+            <Text className="text-gray-300 text-sm">Hora Cierre: {item.salida}</Text>
+            <Text className="text-gray-300 text-sm">Documento: {item.inv_documento}</Text>
 
             <Text className="text-gray-300 text-sm">
               Estado:{" "}
-              <Text className={item.estado === "accepted" ? "text-green-500" : "text-red-500"}>
-                {item.estado.toUpperCase()}
+              <Text className={item.estado === true ? "text-green-500" : "text-red-500"}>
+                {item.estado}
               </Text>
             </Text>
 
-            {item.acompanantes.length > 0 && (
+            {item.inv_name.length > 0 && (
               <View className="mt-2">
                 <Text className="text-gray-300 font-bold">Acompañantes:</Text>
-                {item.acompanantes.map((ac, index) => (
+                {/* {item.inv_name.map((ac, index) => (
                   <View key={index} className="mt-1">
                     {Platform.OS === "web" ? (
                       <Text className="text-gray-300 text-sm">
@@ -88,7 +93,7 @@ export default function HistorialAccesos() {
                       <Text className="text-gray-300 text-sm">{ac.nombre} - {ac.documento} - {ac.contacto}</Text>
                     )}
                   </View>
-                ))}
+                ))} */}
               </View>
             )}
           </View>
@@ -101,7 +106,7 @@ export default function HistorialAccesos() {
     <View className="flex-1 bg-[#04020a]">
         <Text className="text-white mx-auto my-5 text-[24px] font-semibold"> Historial de accesos</Text>
       <FlatList
-        data={historialData}
+        data={accesos}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}

@@ -34,17 +34,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-<<<<<<< HEAD
-      "package": "com.fast_access.miapp"
-=======
-      "package": "com.anonymous.myexpoapp"
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "41d8acf0-301f-4339-be2a-9b42e6025097"
-      }
->>>>>>> c439222 ([DEPLOY])
+"package": "com.fast_access.miapp"
     }
   }
 }
