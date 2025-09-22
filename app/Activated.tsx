@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, FlatList, Platform } from "react-native";
+import { useAccesosStore } from '../store/state'
+ import { Acceso} from '../store/type'
 
 const usuariosActivosData = [
   {
@@ -31,40 +33,57 @@ const usuariosActivosData = [
 ];
 
 export default function UsuariosActivos() {
+  const accesoss = useAccesosStore((state) => state.accesos)
   const [expanded, setExpanded] = useState<string | " ">(" ");
 
-  const renderItem = ({ item }: { item: typeof usuariosActivosData[0] }) => {
-    const isExpanded = expanded === item.id;
+  const renderItem = ({ item }: { item: Acceso }) => {
+    const isExpanded = expanded === String(item.id);
 
     return (
       <View className="bg-[#0a0814] p-4 rounded-xl mb-3">
         
         <View className="flex-row justify-between items-center">
-          <Text className="text-white font-bold text-base">{item.nombre}</Text>
-          
-          <View
-                className={`px-2 py-1 rounded-full ${
-                    item.activo ? "bg-green-500/20" : "bg-red-500/20"
-                }`}
-                >
-                <Text
-                    className={`text-xs font-semibold ${
-                    item.activo ? "text-green-400" : "text-red-400"
-                    }`}
-                >
-                    {item.activo ? "Activo" : "Closed"}
-                </Text>
-    </View>
-        </View>
+          <Text className="text-white font-bold text-base">{item.motivo}</Text>
 
+
+         
+            
+                   {item.acceso_exitoso === true?( 
+                <View
+                className="px-2 py-1 rounded-full bg-green-500/20"
+                >
+              <Text className="text-green-400">
+                Activo
+              </Text>
+            </View>
+              ):(
+              <View
+                className="px-2 py-1 rounded-full bg-red-500/20"
+                > <Text className="text-red-400">
+                Failed
+              </Text>
+              </View>
+                 )}
+    
+        </View>
         {Platform.OS === "web" ? (
-          <Text className="text-gray-300 text-sm mt-1">
-            Documento: {item.documento}
-          </Text>
-        ) : null}
+           item.credenciales.invitados.map((ac, index)=>(
+            <View>
+              {ac.id == item.responsable_id ?(
+           <View>
+            <Text className="text-white font-bold text-base">{ac.inv_name} {ac.inv_lastname}</Text>
+            <Text className="text-gray-300 text-sm mt-1">
+              Documento: {ac.documento}
+            </Text>
+            </View>):(null)}
+            </View>
+           ))
+        )
+        //tengo que revisar esto porque no deberia ser null
+        : null}
 
         <Pressable
-          onPress={() => setExpanded(isExpanded ? " " : item.id)}
+          onPress={() => setExpanded(isExpanded ? " " : String(item.id))}
           className="bg-[#1a1a2e] py-2 px-3 rounded-lg mt-2 self-start"
         >
           <Text className="text-white font-bold">
@@ -74,29 +93,28 @@ export default function UsuariosActivos() {
 
         {isExpanded && (
           <View className="mt-2">
-            <Text className="text-gray-300 text-sm">Fecha: {item.fecha}</Text>
-            <Text className="text-gray-300 text-sm">Contacto: {item.contacto}</Text>
-            <Text className="text-gray-300 text-sm">Hora Apertura: {item.horaApertura}</Text>
-            <Text className="text-gray-300 text-sm">Hora Cierre: {item.horaCierre}</Text>
+            <Text className="text-gray-300 text-sm">Fecha: {item.credenciales.expiracion}</Text>
+            <Text className="text-gray-300 text-sm">Contacto: {item.acceso}</Text>
+
 
             <Text className="text-gray-300 text-sm">
               Estado:{" "}
-              <Text className={item.estado === "accepted" ? "text-green-500" : "text-red-500"}>
-                {item.estado.toUpperCase()}
+              <Text className={item.acceso_exitoso === true ? "text-green-500" : "text-red-500"}>
+                {item.acceso.toUpperCase()}
               </Text>
             </Text>
 
-            {item.acompanantes.length > 0 && (
+            {item.credenciales.invitados.length > 0 && (
               <View className="mt-2">
                 <Text className="text-gray-300 font-bold">Acompañantes:</Text>
-                {item.acompanantes.map((ac, index) => (
+                {item.credenciales.invitados.map((ac, index) => (
                   <View key={index} className="mt-1">
                     {Platform.OS === "web" ? (
                       <Text className="text-gray-300 text-sm">
-                        {ac.nombre} - {ac.documento} - {ac.contacto}
+                         <Text className="font-bold">Nombre: </Text> {ac.inv_name} - <Text className="font-bold">DNI:</Text> {ac.documento} - <Text className="font-bold">TEL:</Text> {ac.contacto}
                       </Text>
                     ) : (
-                      <Text className="text-gray-300 text-sm">{ac.nombre}</Text>
+                      <Text className="text-gray-300 text-sm">{ac.inv_name}</Text>
                     )}
                   </View>
                 ))}
@@ -114,8 +132,8 @@ export default function UsuariosActivos() {
         Usuarios Activos
       </Text>
       <FlatList
-        data={usuariosActivosData}
-        keyExtractor={(item) => item.id}
+        data={accesoss}
+        keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
       />

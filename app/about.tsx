@@ -127,7 +127,17 @@ export default function AccessForm() {
           )}
 
           <TextInput
-            placeholder="Fecha válida desde (YYYY-MM-DD)"
+            placeholder="Fecha del acceso válida (YYYY-MM-DD)"
+            placeholderTextColor="#aaa"
+            value={guest.desde}
+            onChangeText={(text) => updateGuest(index, 'desde', text)}
+            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
+          />
+          
+
+          {/* acá necesito cambiar para que sea contacto  */}
+          <TextInput
+            placeholder="Contacto"
             placeholderTextColor="#aaa"
             value={guest.desde}
             onChangeText={(text) => updateGuest(index, 'desde', text)}
@@ -137,13 +147,7 @@ export default function AccessForm() {
             <Text className="text-red-500">{errors[index].desde}</Text>
           )}
 
-          <TextInput
-            placeholder="Fecha de expiración (YYYY-MM-DD)"
-            placeholderTextColor="#aaa"
-            value={guest.hasta}
-            onChangeText={(text) => updateGuest(index, 'hasta', text)}
-            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
-          />
+      
           {errors[index]?.hasta && (
             <Text className="text-red-500">{errors[index].hasta}</Text>
           )}

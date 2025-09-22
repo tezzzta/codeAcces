@@ -1,27 +1,28 @@
-import { View, Text, Image, Platform, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Image, Platform, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {estadoUsuario} from "../store/state"
-
-
-
-interface Persona {
-  nombre: string;
-  id: number;
-  contacto: number;
-  ubicacion: string;
-  documento: number;
-  fecha_creacion: Date;
-}
-// estado
-const people = estadoUsuario.getState()
+import { estadoUsuario } from "../store/state";
 
 export default function Perfil() {
+  const {
+    nickname,
+    id,
+    contacto,
+    ubicacion,
+    documento,
+    fechaCreacion,
+  } = estadoUsuario((state) => state); 
+
   const imageSize = Platform.OS === 'web' ? 250 : 150;
 
+  // Si todavía no cargó (ejemplo: id = 0 porque no hay usuario)
+  if (!id) {
+    return <Text style={{ color: "white", textAlign: "center", marginTop: 50 }}>Cargando...</Text>;
+  }
+
   return (
-    <View className="flex-1 bg-[#04020a] p-6 ">
+    <View className="flex-1 bg-[#04020a] p-6">
       <Text className="text-white text-4xl font-semibold text-center mb-4 mt-5">
-        {people.nickname}
+        {nickname}
       </Text>
 
       <View className="items-center mb-6">
@@ -35,54 +36,44 @@ export default function Perfil() {
             borderRadius: imageSize / 2,
           }}
         />
-        <Text className="text-white mt-2 text-lg">ID de cuenta: #{people.id}</Text>
+        <Text className="text-white mt-2 text-lg">ID de cuenta: #{id}</Text>
       </View>
 
-      <View className={Platform.OS == 'web' ?"bg-[#0a0814] rounded-xl p-4 space-y-2 mx-[20%]":"bg-[#0a0814] rounded-xl p-4 space-y-2"}>
-        <Text className='text-[22px] text-white m-auto mb-4'> Información de la cuenta </Text>
-        <Info label="Contacto" value={people.contacto.toString()} />
-        <Info label="Ubicación" value={people.ubicacion} />
-        <Info label="Documento" value={people.documento.toString()} />
-        <Info
-          label="Fecha de creación"
-          value={people.fechaCreacion}
-        />
+      <View
+        className={
+          Platform.OS == 'web'
+            ? "bg-[#0a0814] rounded-xl p-4 space-y-2 mx-[20%]"
+            : "bg-[#0a0814] rounded-xl p-4 space-y-2"
+        }
+      >
+        <Text className="text-[22px] text-white m-auto mb-4">
+          Información de la cuenta
+        </Text>
+        <Info label="Contacto" value={contacto?.toString()} />
+        <Info label="Ubicación" value={ubicacion} />
+        <Info label="Documento" value={documento?.toString()} />
+        <Info label="Fecha de creación" value={fechaCreacion} />
       </View>
-          
 
-
-
-          <View className="flex justify-center items-center pb-10 mt-10">
-                 
-                         <Pressable >
-          
-                            {({ pressed }) => (
-                                <LinearGradient
-                                  colors={
-                                    pressed
-                                      ? ['#3336e6', '#3336e6', '#3336e6']
-                                      : ['#ea5818', '#d846ef', '#5346e6']
-                                  }
-                                  start={{ x: 0, y: 0 }}
-                                  end={{ x: 1, y: 0 }}
-                                  className={
-                                    Platform.OS === 'web'
-                                      ? 'text-5xl text-white py-3 px-6 rounded-2xl'
-                                      : 'text-5xl text-white py-3 px-6 rounded-2xl'
-                                  }
-                                  style={{ borderRadius: 20 }}
-                                >
-                    
-                      <Text className='text-white text-5xl'> 
-                        Settings
-                      </Text>
-                    
-                                        </LinearGradient>
-                                        )}
-                  </Pressable>
-          
-                </View>
-     </View>
+      <View className="flex justify-center items-center pb-10 mt-10">
+        <Pressable>
+          {({ pressed }) => (
+            <LinearGradient
+              colors={
+                pressed
+                  ? ['#3336e6', '#3336e6', '#3336e6']
+                  : ['#ea5818', '#d846ef', '#5346e6']
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ borderRadius: 20, paddingVertical: 12, paddingHorizontal: 20 }}
+            >
+              <Text className="text-white text-2xl">Settings</Text>
+            </LinearGradient>
+          )}
+        </Pressable>
+      </View>
+    </View>
   );
 }
 

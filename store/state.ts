@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Acceso } from "./type";
 
 interface Usuario {
      id: number;
@@ -23,7 +24,7 @@ interface Usuario {
 
 export const estadoUsuario = create<Usuario>((set) => ({
     nickname: "",
-    contacto: 0,
+    contacto: 0,  
     ubicacion: "",
     id: 0,
     documento: 0,
@@ -47,6 +48,44 @@ export const estadoUsuario = create<Usuario>((set) => ({
       team_id: usuarioBackend.team_id,
     }),
 
+}));
+
+
+
+//
+//
+//
+//
+// store/useAccesos.ts
+type AccesosState = {
+  accesos: Acceso[];
+  setAccesos: (data: Acceso[]) => void;
+  addAcceso: (acceso: Acceso) => void;
+  updateAcceso: (id: number, data: Partial<Acceso>) => void;
+  removeAcceso: (id: number) => void;
+};
+
+export const useAccesosStore = create<AccesosState>((set) => ({
+  accesos: [],
+
+  setAccesos: (data) => set({ accesos: data }),
+
+  addAcceso: (acceso) =>
+    set((state) => ({
+      accesos: [...state.accesos, acceso],
+    })),
+
+  updateAcceso: (id, data) =>
+    set((state) => ({
+      accesos: state.accesos.map((a) =>
+        a.id === id ? { ...a, ...data } : a
+      ),
+    })),
+
+  removeAcceso: (id) =>
+    set((state) => ({
+      accesos: state.accesos.filter((a) => a.id !== id),
+    })),
 }));
 
 

@@ -5,56 +5,25 @@ import RNPickerSelect from 'react-native-picker-select';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { estadoUsuario, estadoAccesos, estadoLogin} from "../store/state"
+import { estadoUsuario, estadoLogin, useAccesosStore} from "../store/state"
 
 
  export default function Index() {
    const user_id = estadoUsuario((state)=> state.id)
-  const people = estadoUsuario.getState()
-
+ 
   const documento = estadoUsuario((state)=>state.documento)
   const isLogin = estadoLogin((state) => state.isLoggedIn)
   const setUsuario =  estadoUsuario((state) => state.setUsuario)
 
- useEffect(() => {
-   if (isLogin) {
-     const fetchEstado = async () => {
-       console.log("primer console",isLogin)
-       try {
-        console.log(documento)
-         const resultado = await fetch(
-           `http://localhost:3000/api/access/checkUser`,
-           { method: "POST",
-             credentials: "include",
-             headers: { "Content-Type": "application/json" },
-             body:  JSON.stringify({ documento })
-            }
-           
-         );
-         const datos = await resultado.json();
-         console.log(datos)
-         const res = datos.data
-         if (datos?.data) {
-           setUsuario(res);
-           try{
-              console.log(people)
-           }catch{}
-         }
-       } catch (err) {
-         console.error("Error en fetchEstado:", err);
-       }
-     };
-     fetchEstado();
-    }
- }, [isLogin]);
+ 
   
 
   const router = useRouter();
   const [selectedLanguage, setSelectedLanguage] = useState(" ");
 
 
-const accesos = estadoAccesos((state)=> state.accesos)
-const setAccesos = estadoAccesos((state)=> state.setAccesos)
+const accesos = useAccesosStore((state)=> state.accesos)
+const setAccesos = useAccesosStore((state)=> state.setAccesos)
 
 //
 ///
@@ -67,7 +36,7 @@ const setAccesos = estadoAccesos((state)=> state.setAccesos)
    //En este apartado haremos las funciones para hacer fetch y obenter los datos de las otras vistas
  const firstFetch = async() => {
   try{
-       const resultado = await fetch('http://localhost:3000/api/access/',
+       const resultado = await fetch('https://backend-access.vercel.app/api/access/',
       {
         method: "POST",
         credentials: "include",
@@ -84,7 +53,7 @@ const setAccesos = estadoAccesos((state)=> state.setAccesos)
  }
  const secondFetch = async() => {
   try{
-   const resultado = await fetch('http://localhost:3000/api/access/',
+   const resultado = await fetch('https://backend-access.vercel.app/api/access/',
       {
         method: "POST",
         credentials: "include",
@@ -105,7 +74,7 @@ const setAccesos = estadoAccesos((state)=> state.setAccesos)
 
     try{
 
-     const resultado = await fetch('http://localhost:3000/api/access/allByUser',
+     const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',
       {
         method: "POST",
         credentials: "include",
@@ -116,8 +85,19 @@ const setAccesos = estadoAccesos((state)=> state.setAccesos)
       }
     );
     const json = await resultado.json()
-    setAccesos(json)
-    console.log(accesos)
+
+    if(Array.isArray(json)){
+      setAccesos(json)
+      console.log("Accesos cargados:", json);
+    } 
+    
+    //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
+    else if (json?.data) {
+    setAccesos(json.data);
+    console.log("Accesos cargados (con data):", json.data);
+    } else {
+    console.log("Respuesta sin datos reconocidos");
+    } 
   }catch(err){
        console.log("error mi negro")
         console.error("Error en threFetch:", err);    
@@ -198,15 +178,16 @@ const setAccesos = estadoAccesos((state)=> state.setAccesos)
                 }
                 if(value=== 'js'){
                   router.push('/history')
-                  console.log("ejecutando")
-                  console.log(user_id)
-                   if (user_id) {
+                    if (user_id) {
                        threFetch();
                     }
 
                 }
                 if(value==='py'){
                   router.push('/Activated')
+                   if (user_id) {
+                       threFetch();
+                    }
                 }
               }}
               items={[

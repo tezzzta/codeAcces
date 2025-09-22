@@ -23,7 +23,7 @@ export default function Login() {
   // y el login sea exitoso pues hacer el otro fetch
   const getApiData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/login", {
+      const response = await fetch("https://backend-access.vercel.app/api/login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
