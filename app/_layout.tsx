@@ -2,21 +2,24 @@ import { Stack } from 'expo-router';
 import {useEffect} from 'react'
 import '../global.css';
 import { estadoLogin, estadoUsuario } from 'store/state';
+import {API_URL} from '../components/config'
 
 export default function Layout() {
   const loggIn = estadoLogin((state) => state.isLoggedIn);
   const  people = estadoUsuario.getState()
   const setUsuario = estadoUsuario((state)=> state.setUsuario)
+  
   const documento = people.documento
+  
   //necesito encontrar un lugar para este useEffect pero por el momento lo pondré acá
    useEffect(() => {
      if (loggIn) {
        const fetchEstado = async () => {
          console.log("primer console",loggIn)
          try {
-           const resultado = await fetch(
-             `https://backend-access.vercel.app/api/access/checkUser`,
-             { method: "POST",
+      // const resultado = await fetch(`${API_URL}/api/access/checkUser`, {
+           const resultado = await fetch( `https://backend-access.vercel.app/api/access/checkUser`,{
+               method: "POST",
                credentials: "include",
                headers: { "Content-Type": "application/json" },
                body:  JSON.stringify({ documento })

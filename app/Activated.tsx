@@ -1,44 +1,76 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, FlatList, Platform } from "react-native";
-import { useAccesosStore } from '../store/state'
+import { useAccesosStore, estadoUsuario } from '../store/state'
  import { Acceso} from '../store/type'
-
-const usuariosActivosData = [
-  {
-    id: "1",
-    nombre: "Carlos Pérez",
-    documento: "V-12345678",
-    contacto: "+58 412 555 1234",
-    fecha: "2025-08-10",
-    horaApertura: "08:30 AM",
-    horaCierre: "10:15 AM",
-    estado: "accepted",
-    activo: true,
-    acompanantes: [
-      { nombre: "María López", documento: "V-87654321", contacto: "+58 414 555 9876" }
-    ]
-  },
-  {
-    id: "2",
-    nombre: "Luis Fernández",
-    documento: "V-22334455",
-    contacto: "+58 424 555 4567",
-    fecha: "2025-08-09",
-    horaApertura: "02:00 PM",
-    horaCierre: "02:30 PM",
-    estado: "failed",
-    activo: false,
-    acompanantes: []
-  }
-];
+import {API_URL} from '../components/config'
+import { LinearGradient } from "expo-linear-gradient";
+import RNPickerSelect from 'react-native-picker-select';
+import { useRouter } from "expo-router";
 
 export default function UsuariosActivos() {
   const accesoss = useAccesosStore((state) => state.accesos)
   const [expanded, setExpanded] = useState<string | " ">(" ");
+ 
+  const [selectedValue, setSelectedValue] = useState(null);
+
+  //estos son las constantes y estados para el fecth y traer los users activos
+
+    const user_id = estadoUsuario((state) => state.id)
+    const[activo, setActivo] = useState(true)
+     const setAccesos = useAccesosStore((state) => state.setAccesos)
+
+   const router = useRouter();
+
+      //
+      //
+     //con este haremos fetch 
+    const threFetch = async() => {
+         console.log("PRRRRRR",user_id)
+    
+        try{
+          // const resultado = await fetch(`${API_URL}/api/access/allByUser`, {
+    
+         const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',{
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-type": "application/json"},
+            body:JSON.stringify({
+              user_id: user_id,
+              state: activo
+            })
+          }
+        );
+        const json = await resultado.json()
+    
+        if(Array.isArray(json)){
+          setAccesos(json)
+          console.log("Accesos cargados:", json);
+        } 
+        
+        //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
+        else if (json?.data) {
+        setAccesos(json.data);
+        console.log("Accesos cargados (con data):", json.data);
+        } else {
+        console.log("Respuesta sin datos reconocidos");
+        } 
+      }catch(err){
+           console.log("error mi negro")
+            console.error("Error en threFetch:", err);    
+      }
+     }
+    
+ let cambio;
+if (activo) {
+  cambio = "Accesos Exitosos";
+} else {
+  cambio = "Inactivo";
+}
 
   const renderItem = ({ item }: { item: Acceso }) => {
     const isExpanded = expanded === String(item.id);
 
+  
     return (
       <View className="bg-[#0a0814] p-4 rounded-xl mb-3">
         
@@ -131,6 +163,99 @@ export default function UsuariosActivos() {
       <Text className="text-white mx-auto my-5 text-[24px] font-semibold">
         Usuarios Activos
       </Text>
+
+       <View className="gap-4">
+  
+      <Text className="text-white mx-auto font-semibold"> Busca accesos exitosos y fallidos del último mes</Text>
+
+          {/*  */}
+          {/*  */}
+          {/* Haremos un seleccionable, entre active e inactive */}
+        <View className="w-40 mx-auto ">
+            <RNPickerSelect
+              onValueChange={(value) => {
+                //EN ESTOS MISMOS IF, CREO QUE PUEDO HACER FETCH
+           
+                if(value=== 'js'){
+                 setSelectedValue(value)
+                 setActivo(true)
+                       }
+                if(value==='py'){
+                setSelectedValue(value)
+                  setActivo(false)
+              }
+              }}
+              items={[
+                { label: 'Accesos Exitosos', value: 'js' },
+                { label: 'Accesos Fallidos', value: 'py' },
+
+              ]}
+              placeholder={{ label:  cambio.toString(), value: " " }}
+              style={{
+                inputIOS: {
+                  color: 
+                  selectedValue ==="js"
+                  ? "#4CAF50"
+                  : selectedValue === "py"
+                  ? "#ff2c2c"
+                  : "#F5F5F5",
+                  padding: 12,
+                  backgroundColor: '#2a2a2a',
+                  borderRadius: 10,
+                  fontSize: 16,
+                },
+                inputAndroid: {
+                  color: 
+                  selectedValue ==="js"
+                  ? "#4CAF50"
+                  : selectedValue === "py"
+                  ? "#ff2c2c"
+                  : "#F5F5F5",
+                      height: 50,
+                  padding: 12,
+                  backgroundColor: '#2a2a2a',
+                  borderRadius: 20,
+                  fontSize: 16,
+                },
+                inputWeb: {
+                  color: 
+                  selectedValue ==="js"
+                  ? "#4CAF50"
+                  : selectedValue === "py"
+                  ? "#ff2c2c"
+                  : "#F5F5F5",
+                  padding: 12,
+                  backgroundColor: '#2a2a2a',
+                  borderRadius: 10,
+                  width: '100%',
+                  fontWeight: "bold"
+                },
+                viewContainer: {
+                  width: '100%',
+                },
+                iconContainer: {
+                  top: 16,
+                  right: 10,
+                },
+              }}
+            />
+
+          </View>
+                  <Pressable onPress={threFetch}>
+        {({pressed}) => 
+        <LinearGradient
+        colors={pressed
+                ?["#3336e6", "#3336e6", "#3336e6"]
+                : ["#ea5818", "#d846ef", "#5346e6"]
+              }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className={Platform.OS == 'web' ? "rounded-2xl w-[100px] mx-auto": "rounded-2xl"}
+        >
+          <Text className="text-white font-semibold mx-auto my-2"> Buscar</Text>
+          </LinearGradient>}
+      </Pressable>
+       </View>
       <FlatList
         data={accesoss}
         keyExtractor={(item) => String(item.id)}

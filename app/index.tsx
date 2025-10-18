@@ -6,6 +6,7 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { estadoUsuario, estadoLogin, useAccesosStore} from "../store/state"
+import {API_URL} from '../components/config'
 
 
  export default function Index() {
@@ -34,53 +35,20 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 //
 //
    //En este apartado haremos las funciones para hacer fetch y obenter los datos de las otras vistas
- const firstFetch = async() => {
-  try{
-       const resultado = await fetch('https://backend-access.vercel.app/api/access/',
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {"Conten-type": "aplication/json"},
-        body:JSON.stringify({
-          
-        })
-      }
-    )
-
-  }catch{
-
-  }
- }
- const secondFetch = async() => {
-  try{
-   const resultado = await fetch('https://backend-access.vercel.app/api/access/',
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {"Conten-type": "aplication/json"},
-        body:JSON.stringify({
-          
-        })
-      }
-    )
-
-  }catch{
-    
-  }
-  }
-
+ 
   const threFetch = async() => {
      console.log("PRRRRRR",user_id)
 
     try{
+      // const resultado = await fetch(`${API_URL}/api/access/allByUser`, {
 
-     const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',
-      {
+     const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',{
         method: "POST",
         credentials: "include",
         headers: {"Content-type": "application/json"},
         body:JSON.stringify({
-          user_id: user_id
+          user_id: user_id,
+          state: true
         })
       }
     );
@@ -178,11 +146,13 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
                 }
                 if(value=== 'js'){
                   router.push('/history')
-                    if (user_id) {
-                       threFetch();
-                    }
+        
 
                 }
+                //aca pienso en dejar el fetch pero con estado activated
+                //por defecto
+                //ya dentro elegir entre failed y activated
+                //igual debo crear el filtro por estado 
                 if(value==='py'){
                   router.push('/Activated')
                    if (user_id) {
@@ -236,7 +206,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
  {/* Parte de abajo xd  */}
       <View className="flex-row items-center justify-center gap-10 mb-[10%]">
         <Link href="/history" asChild>
-          <Pressable>
+          <Pressable >
             {({ pressed }) => (
               <Ionicons
                 name="time-outline"
@@ -244,6 +214,8 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
                 color={pressed ? 'white' : '#DADADA'}
                 style={pressed ? { backgroundColor: '#6366e6', padding: 2, borderRadius: 20 } : {}}
               />
+              
+              
             )}
           </Pressable>
         </Link>

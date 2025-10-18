@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { Acceso } from "./type";
+import { Acceso, Invitado } from "./type";
 
 interface Usuario {
      id: number;
-  fechaCreacion: string;   // ISO string de fecha
+  fechaCreacion: string;   // ISO string de fecha, debo cambiarlo
   nickname: string;
   contacto: number;
   ubicacion: string;
@@ -52,9 +52,7 @@ export const estadoUsuario = create<Usuario>((set) => ({
 
 
 
-//
-//
-//
+
 //
 // store/useAccesos.ts
 type AccesosState = {
@@ -92,8 +90,7 @@ export const useAccesosStore = create<AccesosState>((set) => ({
 
 //necesito refactorizar este apifetch
 
-//ademas hay que dejar de almacenarlo en el localstorage
-//y usar cookies
+
 export const apiFetch = async (
   url: string,
   options: RequestInit = {},
@@ -125,62 +122,6 @@ export const apiFetch = async (
 };
 
 
-
-//acá crearemos un estado para 
-//almacenar los accesos como una array de objetos
-
-interface Accesos {
-  id: string;
-  created_at: string;
-  user_id: string;
-  inv_name: string;
-  inv_lastname: string;
-  inv_documento: string;
-  motivo_ingreso: string;
-  fecha: string;
-  salida: string;
-  responsable: string;
-  estado  : boolean;
-  contacto: string;
-}
-
- 
-
-//este es para enviar
-interface EstadoAccesos {
-  accesos: Accesos[];
-  setAccesos: (nuevos: Accesos[]) => void;
-  agregarAcceso: (nuevo: Accesos) => void;
-  limpiarAccesos: () => void;
-}
-
-export const arrayAccesos = create<EstadoAccesos>((set)=>({
-  accesos: [],
-  setAccesos: (nuevos) => set({accesos: nuevos}),
-  agregarAcceso: (nuevo) => set((state) => ({accesos: [nuevo, ...state.accesos]})),
-  limpiarAccesos: () => set({accesos: []}),
-
-
-}))
-
-//PRIMERO VOY A TRABAJAR EN TRAER LOS ACCESOS
-//SUBIR EL COMMIT Y DESPUÉS TRABAJAR EN EL CHANGE DE ESTADO
-
-//segunda interfaz para traer estados del backend
-interface traerAccesos {
- accesos: Accesos[];
- setAccesos: (nuevos: Accesos[]) => void;
-  
-}
-
-
-//ENSAYARÉ ESTE PARA SOLO TRAER LOS ACCESOS 
-export const estadoAccesos = create<traerAccesos>((set)=>({
-  accesos: [],
-   setAccesos: (nuevos) => set({accesos: nuevos}),
-
-}))
-
 //acá crearemos un estado global
 //donde nos ayude a ccontrolar la vista del login
 //prrrr 
@@ -193,3 +134,83 @@ export const estadoLogin = create<EstadoLogin>((set)=>({
     isLoggedIn: false,
     setIsLoggedIn: (x) => set({isLoggedIn: x})
 }))
+
+
+
+//Estado para crear un acceso
+
+//nota, debo verificar la propiedad id y ver como hago que esta se cree sola en el backend
+function crearInvitado( nombre : string, apellido: string, documento: string, contacto: string, expiracion: string) { 
+  return {
+    created_at: new Date().toISOString(),
+    inv_name: nombre,
+    inv_lastname: apellido,
+    documento,
+    estado: true,
+    contacto,
+    expiracion: expiracion
+
+  }
+}
+
+interface elInvitado {
+  
+
+    created_at: string;
+    inv_name: string;
+    inv_lastname: string;
+    documento: string;
+    estado: boolean;
+    //esta propiedad pasarla al estate general
+    contacto: string;
+
+}
+
+interface ArrayInvitados{
+    invitados: elInvitado[];
+  agregarInvitado: (nombre : string, apellido: string, documento: string, contacto: string, expiracion: string) => void;
+}
+
+export const  invitadosState  = create<ArrayInvitados>((set)=> ({
+  invitados: [],
+  agregarInvitado: ( nombre : string, apellido: string, documento: string, contacto: string, expiracion: string) => set((state)=> ({invitados: [...state.invitados, crearInvitado(nombre, apellido, documento, contacto, expiracion)]}))
+
+  }));
+
+interface enviarAccesos {
+  acceso: {
+      acceso_exitoso: boolean;
+      activo: boolean;
+      user_id: number;
+      acceso: string;
+      credential_id: number;
+      responsable_id: string;
+      expiracion: Date | null;
+      invitados: elInvitado[];
+      motivo: string;
+  }
+  setinvitados: (invitados: elInvitado[]) => void;
+  setMotivo: (motivo: string) => void;
+  setUsuario: (user_id: number) => void;
+  setResponsable: (responsable_id: string) => void;
+  setFecha: (expiracion: Date | null) => void;
+}
+export const enviarAcceso =  create<enviarAccesos>((set)=>({
+  acceso: {
+    acceso_exitoso: false,
+    activo: false,
+    user_id: 0,
+    //debo tener acceso? validar, sino borrar
+    acceso: "",
+    credential_id: 0,
+    responsable_id: " ",      
+    expiracion: new Date(),
+    invitados: [],
+      motivo: ""
+  },
+  setinvitados: (invitados) => set( (state) => ({acceso:{ ...state.acceso, invitados}})),
+  setMotivo: (motivo) => set((state) => ({acceso:{ ...state.acceso, motivo}})),
+  setUsuario: (user_id) => set((state) => ({acceso:{ ...state.acceso, user_id}})),
+  setResponsable: (responsable_id) => set((state) => ({acceso:{ ...state.acceso, responsable_id}})),
+  setFecha : (expiracion) => set((state) => ({acceso:{ ...state.acceso, expiracion}}))
+}));

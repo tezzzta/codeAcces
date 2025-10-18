@@ -12,7 +12,8 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,7 +35,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-"package": "com.fast_access.miapp"
+      "package": "com.fast_access.miapp"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "41d8acf0-301f-4339-be2a-9b42e6025097"
+      }
     }
   }
 }

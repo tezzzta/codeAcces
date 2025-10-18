@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { estadoUsuario, estadoLogin } from '../store/state';
-
+import {API_URL} from '../components/config'
 export default function Login() {
+
+
   const [documento, Setdocumento] = useState("");
   const [password, setPassword] = useState("");
   const setIsLoggedIn = estadoLogin((state) => state.setIsLoggedIn);
@@ -18,11 +20,11 @@ export default function Login() {
 
 
     const [logueado, setLogueado] = useState(false)
-
-  //se me ocurre hacer un usestatepara cuando suceda 
-  // y el login sea exitoso pues hacer el otro fetch
+  
   const getApiData = async () => {
     try {
+      // const response = await fetch(`${API_URL}/api/login`, {
+      //Acá podemos cambiar para pruebas y ya despliegue
       const response = await fetch("https://backend-access.vercel.app/api/login", {
         method: "POST",
         credentials: "include",
@@ -58,13 +60,7 @@ useEffect(() => {
 }, [logueado]);
  
 
-  ///
-  //
-  //
-  //
-  //
-  //
-  //
+  
   return (
     <View className="flex-1 bg-[#04020a] justify-center px-6">
       <Text
@@ -80,9 +76,9 @@ useEffect(() => {
       <TextInput
         value={documento}
         onChangeText={Setdocumento}
-        placeholder="Correo electrónico"
+        placeholder="ID de la cuenta"
         placeholderTextColor="#9e9e9e"
-        className={Platform.OS == 'web' ?"text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-4 w-1/2 mx-auto":"text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-4" }
+        className={Platform.OS == 'web' ?"text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-4 w-3/4 mx-auto md:w-1/2":"text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-4" }
       />
 
       <TextInput
@@ -91,7 +87,7 @@ useEffect(() => {
         placeholder="Contraseña"
         placeholderTextColor="#9e9e9e"
         secureTextEntry
-        className={Platform.OS == 'web' ? "text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-8 w-1/2 mx-auto": "text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-8"}
+        className={Platform.OS == 'web' ? "text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-8 w-3/4 mx-auto md:w-1/2": "text-[#F5F5F5] bg-[#2a2a2a] rounded-xl px-4 py-3 mb-8"}
       />
 
       <Pressable onPress={getApiData}>
@@ -104,7 +100,7 @@ useEffect(() => {
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className={Platform.OS == 'web' ? "rounded-2xl w-1/2 mx-auto": "rounded-2xl"}
+            className={Platform.OS == 'web' ? "rounded-2xl w-3/4 mx-auto md:w-1/2": "rounded-2xl"}
             style={{ borderRadius: 24 }}
           >
             <Text className="text-white text-center py-4 font-semibold text-lg">
