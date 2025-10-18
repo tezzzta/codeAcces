@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 import '../global.css';
 import { estadoLogin, estadoUsuario } from 'store/state';
 import {API_URL} from '../components/config'
-
+//NOTA: Al desplegar en web necesito eliminar 
 export default function Layout() {
   const loggIn = estadoLogin((state) => state.isLoggedIn);
   const  people = estadoUsuario.getState()
