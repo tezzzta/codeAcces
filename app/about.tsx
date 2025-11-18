@@ -4,6 +4,38 @@ import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { enviarAcceso, estadoUsuario } from '../store/state';
 import CustomDatePicker from '../components/DatePicker'
+
+  import * as Clipboard from 'expo-clipboard';
+
+type texxto ={
+  text: string;
+}
+
+  function Copipaste({ text }: texxto) {
+  const [copied, setCopied] = useState(false);
+
+  const copiar = async () => {
+    await Clipboard.setStringAsync(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Pressable
+      onPress={copiar}
+      className="  rounded-lg px-4 py-2 mx-auto"
+    >
+      <Ionicons name='copy' size={20} color="gray" className=' '>
+          <Text className="text-white font-semibold Saint-serif">
+        {copied ? "✅ Copied!" : " Copy"}
+      </Text>
+      </Ionicons>
+     
+    </Pressable>
+  );
+}
+
+
 interface Guest {
   inv_name: string;
   inv_lastname: string;
@@ -86,9 +118,7 @@ export default function AccessForm() {
 
   const handleSubmit = async () => {
     setPress(true)
-  console.log(acceso.invitados)
-  console.log(guests)
-    const newErrors: ValidationError[] = [];
+      const newErrors: ValidationError[] = [];
 
     guests.forEach((guest) => {
       const guestErrors: ValidationError = {};
@@ -110,8 +140,7 @@ export default function AccessForm() {
     if (hasErrors) return;
     setLoading(true);
       try{
-        console.log(guests)
-        console.log("Aca los invitados negro",acceso.invitados)
+         //no olvidar 
         // const response = await fetch("http://localhost:3000/api/access", {
          const response = await fetch('https://backend-access.vercel.app/api/access',{
 
@@ -128,7 +157,9 @@ export default function AccessForm() {
     if (!response.ok) throw new Error("Error al enviar datos");
 
     const data = await response.json();
-    setAccessLink(data.link || "http://localhost:3000/acceso/" + data.id);
+    const {credencial, codigo} = data;
+ 
+    setAccessLink(data.link || "http://localhost:3000/acceso/" + credencial + "/" + codigo);
      setModalVisible(true);
 
      //puedo quitar este aleter y este console.log
@@ -137,13 +168,12 @@ export default function AccessForm() {
 
       }catch(error){
           //obvio todos los consoles debo borrarlos
-          console.error(error);
-          alert("❌ Ocurrió un error al enviar los datos");
+           alert("❌ Ocurrió un error al enviar los datos");
 
       } finally{
          setLoading(false);
       }
-    setPress(true)
+    setPress(true) 
 
     //este alert tambien puedo quitarlo
  
@@ -154,18 +184,17 @@ export default function AccessForm() {
     setinvitados(guests)
     if (press) {
       setPress(false);
-      console.log('Acá el acceso', acceso);
-    }
+     }
   }, [press, guests, user_id]);
 
   return (
     <ScrollView className="flex-1 bg-[#04020a] px-4 pt-10">
-      <Text className="text-[#F5F5F5] text-3xl font-semibold text-center mb-6">
+      <Text className="text-[#F5F5F5] text-3xl font-semibold text-center mb-6 mt-5">
         Nuevo acceso
       </Text>
 
       {/* Motivo */}
-      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-1'} text-white text-lg font-semibold`}>
+      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-2 mx-auto'} text-white text-lg font-semibold`}>
         Motivo de la visita
       </Text>
       <TextInput
@@ -177,11 +206,10 @@ export default function AccessForm() {
       />
 
       {/* Fecha, DEBO VER COMO HAGO PARA QUE ELIJA LA FECHA CON INTERFAZ */}
-      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-1'} text-white text-lg font-semibold`}>
-        Fecha
+      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-1 mx-auto'} text-white text-lg font-semibold`}>
+        Selecciona fecha
       </Text>
-      {/*  */}
-      {/*  */}
+    
       {/*Aca para cambiar la input de fecha  */}
       <CustomDatePicker
             value={acceso.expiracion}
@@ -201,8 +229,8 @@ export default function AccessForm() {
         <Text className="text-red-500 mb-4  mx-auto text-center">Error en fecha (formato: YYYY-MM-DD)  {"\n"} o valida espacios</Text>
       )}
 
-      <Pressable onPress={addGuest} className="flex-row items-center mb-4 mx-auto mt-2">
-        <Ionicons name="add-circle-outline" size={isWeb ? 24 : 32} color="#fff" />
+      <Pressable onPress={addGuest} className="flex-row items-center mb-4 mx-auto mt-4">
+        <Ionicons name="add-circle-outline" size={isWeb ? 30 : 44} color="#fff" />
         {isWeb && <Text className="text-white font-semibold ml-2">Agregar invitado</Text>}
       </Pressable>
 
@@ -246,8 +274,7 @@ export default function AccessForm() {
             className="bg-[#1a1a2e] text-white p-2 rounded my-1"
           />
 
-          {/* Responsable */}
-          <Pressable onPress={() => setResponsable(guest.documento)}>
+           <Pressable onPress={() => setResponsable(guest.documento)}>
             <Text
               className={`mx-auto py-1 font-semibold px-10 rounded ${
                 guest.documento === acceso.responsable_id ? 'bg-green-500' :'text-white bg-[#35358f]'
@@ -259,8 +286,7 @@ export default function AccessForm() {
         </View>
       ))}
 
-      {/* Botón Crear */}
-      <View className="flex justify-center items-center pb-10 mt-10">
+       <View className="flex justify-center items-center pb-10 mt-10">
         <Pressable onPress={handleSubmit} disabled={loading}>
           {({ pressed }) => (
             <LinearGradient
@@ -284,7 +310,6 @@ export default function AccessForm() {
         </Pressable>
       </View>
 
-      {/* 🔹 Modal con el link */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -292,21 +317,38 @@ export default function AccessForm() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 justify-center items-center bg-black/70">
-          <View className={`${isWeb ? 'bg-[#fff] rounded-xl p-6 w-4/5':'bg-[#fff] rounded-xl p-6 w-4/5' }`}>
-            <Text className="text-lg font-bold mb-4 text-center">✅ Acceso creado</Text>
-            <Text className="text-gray-700 mb-4 text-center font-semibold">
+          <View className={`${isWeb ? 'bg-[#272797] rounded-xl p-6 w-4/5':'bg-[#fff] rounded-xl p-6 w-4/5' }`}>
+            <Text className="text-lg font-bold mb-4 text-center text-white">✅ Acceso creado</Text>
+            <Text className="text-gray-300 mb-4 text-center font-semibold">
               Este es el link de acceso:
             </Text>
-            {/* necesito devolver el link del acceso para que lo puedan ver  */}
-            <Text className="text-blue-600 underline text-center break-words mb-6">
+              <Text className="text-blue-400 underline text-center break-words mb-6">
               {accessLink}
             </Text>
+           <Copipaste text={accessLink}/>
 
+ 
             <Pressable
               onPress={() => setModalVisible(false)}
-              className="bg-[#3336e6] py-2 px-6 rounded-xl mx-auto"
+              className="py-2 px-6 rounded-xl mx-auto"
             >
-              <Text className="text-white text-center font-semibold">Cerrar</Text>
+               {({pressed})=>(
+                <LinearGradient 
+              colors={
+                 
+                   pressed
+                  ? ['#3336e6', '#3336e6']
+                  : ['#ea5818', '#d846ef', '#5346e6']
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="flex-row items-center space-x-2 rounded-3xl px-5 py-3"
+              style={{ borderRadius: 20 }}  
+              >
+
+                <Text className='text-white font-semibold'>Cerrar</Text>
+              </LinearGradient>
+               )}
             </Pressable>
           </View>
         </View>

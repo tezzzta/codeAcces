@@ -9,16 +9,14 @@ import CustomDatePicker from '../components/DatePicker'
 
 export default function HistorialAccesos() {
   const threFetch = async() => {
-     console.log("PRRRRRR",user_id)
-      console.log(selectedDate)
-     if(!selectedDate){
+      if(!selectedDate){
       alert("papi, te falta la fecha")
         return;
      }
     try{
       // const resultado = await fetch(`${API_URL}/api/access/allFilter`, {
 
-     const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',{
+     const resultado = await fetch('https://backend-access.vercel.app/api/access/allFilter',{
         method: "POST",
         credentials: "include",
         headers: {"Content-type": "application/json"},
@@ -32,19 +30,14 @@ export default function HistorialAccesos() {
     const json = await resultado.json()
     if(Array.isArray(json)){
       setAccesos(json)
-      console.log("Accesos cargados:", json);
-    } 
+     } 
     //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
     else if (json?.data) {
     setAccesos(json.data);
-    console.log("Accesos cargados (con data):", json.data);
-    } else {
-    console.log("Respuesta sin datos reconocidos");
-    } 
+     } else {
+     } 
   }catch(err){
-       console.log("error mi negro")
-        console.error("Error en threFetch:", err);    
-  }
+   }
  }
 
 
@@ -149,11 +142,12 @@ export default function HistorialAccesos() {
       >
 
         <View className= "flex-1 w-full bg-[#000000B3] justify-center items-center ">
-          <View className="bg-[#fff] items-center rounded-10">
+          <View className="bg-gray-400 items-center rounded-lg p-2">
          {item.credenciales?.qr_url ? (
             <Image
               source={{ uri: item.credenciales.qr_url }}
               style={{ width: 250, height: 250 }}
+              className="rounded-lg"
             />
           ) : (
             <Text>No hay código QR disponible</Text>
@@ -172,7 +166,9 @@ export default function HistorialAccesos() {
 
   return (
     <View className="flex-1 bg-[#04020a]">
-        <Text className="text-white mx-auto my-5 text-[24px] font-semibold"> Historial de accesos</Text>
+        <Text className={Platform.OS === 'web'?"text-white mx-auto my-5 text-[24px] font-semibold":"text-white mx-auto my-5 mt-[25%] text-[24px] font-semibold"}>
+           Historial de accesos
+        </Text>
 
 
 
@@ -216,7 +212,7 @@ export default function HistorialAccesos() {
     <View>
 
       {/* este es el de la aplicacion android */}
-                <Text className="text-white">Selectedd date: {selectedDate?.toLocaleDateString()}</Text>
+                <Text className="text-white mx-auto mb-2 font-semibold mt-10"> Selected date: {selectedDate?.toLocaleDateString()}</Text>
 
 			
 				<CustomDatePicker

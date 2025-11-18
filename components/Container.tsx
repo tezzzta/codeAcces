@@ -1,4 +1,8 @@
-import { SafeAreaView } from 'react-native';
+//hice un cambio acá, antes se importaba de react-native
+//pero ahora pide importar de react-native-safe-area-context
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export const Container = ({ children }: { children: React.ReactNode }) => {
   return <SafeAreaView className={styles.container}>{children}</SafeAreaView>;

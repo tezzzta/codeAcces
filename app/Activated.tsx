@@ -25,8 +25,7 @@ export default function UsuariosActivos() {
       //
      //con este haremos fetch 
     const threFetch = async() => {
-         console.log("PRRRRRR",user_id)
-    
+     
         try{
           // const resultado = await fetch(`${API_URL}/api/access/allByUser`, {
     
@@ -44,19 +43,15 @@ export default function UsuariosActivos() {
     
         if(Array.isArray(json)){
           setAccesos(json)
-          console.log("Accesos cargados:", json);
-        } 
+         } 
         
         //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
         else if (json?.data) {
         setAccesos(json.data);
-        console.log("Accesos cargados (con data):", json.data);
-        } else {
-        console.log("Respuesta sin datos reconocidos");
-        } 
+         } else {
+         } 
       }catch(err){
-           console.log("error mi negro")
-            console.error("Error en threFetch:", err);    
+              
       }
      }
     
@@ -248,11 +243,12 @@ if (activo) {
                 ?["#3336e6", "#3336e6", "#3336e6"]
                 : ["#ea5818", "#d846ef", "#5346e6"]
               }
+              style={{ borderRadius: 10  }}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className={Platform.OS == 'web' ? "rounded-2xl w-[100px] mx-auto": "rounded-2xl"}
+            className={Platform.OS == 'web' ? "rounded-2xl w-[100px] mx-auto": " mx-auto px-4 mt-1"}
         >
-          <Text className="text-white font-semibold mx-auto my-2"> Buscar</Text>
+          <Text className="text-white font-semibold mx-auto my-2 "> Buscar</Text>
           </LinearGradient>}
       </Pressable>
        </View>

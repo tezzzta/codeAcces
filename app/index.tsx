@@ -37,8 +37,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
    //En este apartado haremos las funciones para hacer fetch y obenter los datos de las otras vistas
  
   const threFetch = async() => {
-     console.log("PRRRRRR",user_id)
-
+ 
     try{
       // const resultado = await fetch(`${API_URL}/api/access/allByUser`, {
 
@@ -56,26 +55,16 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 
     if(Array.isArray(json)){
       setAccesos(json)
-      console.log("Accesos cargados:", json);
-    } 
+     } 
     
     //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
     else if (json?.data) {
     setAccesos(json.data);
-    console.log("Accesos cargados (con data):", json.data);
-    } else {
-    console.log("Respuesta sin datos reconocidos");
-    } 
+     } else {
+     } 
   }catch(err){
-       console.log("error mi negro")
-        console.error("Error en threFetch:", err);    
-  }
+    }
  }
-
-
- 
-
-
   ////
   ///
   //
@@ -136,7 +125,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
             </Pressable>
           </Link>
 
-          <View className="w-40">
+          <View className="w-40 overflow-hidden rounded-lg bg-[#2a2a2a]">
             <RNPickerSelect
               onValueChange={(value) => {
                 setSelectedLanguage(value);
@@ -181,6 +170,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
                   backgroundColor: '#2a2a2a',
                   borderRadius: 20,
                   fontSize: 16,
+                  zIndex: 10,
                 },
                 inputWeb: {
                   color: '#F5F5F5',
@@ -204,7 +194,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 
 
  {/* Parte de abajo xd  */}
-      <View className="flex-row items-center justify-center gap-10 mb-[10%]">
+      <View className="flex-row items-center justify-center gap-10 mb-[17%]">
         <Link href="/history" asChild>
           <Pressable >
             {({ pressed }) => (

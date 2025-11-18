@@ -15,8 +15,7 @@ export default function Layout() {
    useEffect(() => {
      if (loggIn) {
        const fetchEstado = async () => {
-         console.log("primer console",loggIn)
-         try {
+          try {
       // const resultado = await fetch(`${API_URL}/api/access/checkUser`, {
            const resultado = await fetch( `https://backend-access.vercel.app/api/access/checkUser`,{
                method: "POST",
@@ -27,30 +26,43 @@ export default function Layout() {
              
            );
            const datos = await resultado.json();
-           console.log(datos)
-           const res = datos.data
+            const res = datos.data
            if (datos?.data) {
              setUsuario(res);
              try{
-                console.log("Respuesta mi perro",res)
-             }catch{}
+              }catch{}
            }
          } catch (err) {
-           console.error("Error en fetchEstado:", err);
-         }
+          }
        };
        fetchEstado();
       }
    }, [loggIn]);
 
   return (
+
     <Stack>
       <Stack.Protected guard={loggIn}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack.Protected>
+      <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="about" options={{ headerShown: false }} />
+      </Stack.Protected>
+      {/*  validar las rutas, y poner o quitar la mayuscula del inicio*/}
+      <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="Activated" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="person" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="history" options={{ headerShown: false }} />
+      </Stack.Protected>
       <Stack.Protected guard={!loggIn}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack.Protected>
+            <Stack.Screen name="showqr/[id]/[hash]" options={{ headerShown: false }} />
+
     </Stack>
   );
 }

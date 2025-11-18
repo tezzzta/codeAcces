@@ -45,8 +45,7 @@ export default function Login() {
       }
     } catch (err) {
       setLogueado(false);
-      console.error(err);
-    }
+     }
  
   };
              
