@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { enviarAcceso, estadoUsuario } from '../store/state';
 import CustomDatePicker from '../components/DatePicker'
-
+import {ParteDeAbajo} from '../components/PartedeAbajo'
   import * as Clipboard from 'expo-clipboard';
-
+import {BottonToIndex} from '../components/BotonToIndex'
 type texxto ={
   text: string;
 }
@@ -188,171 +188,216 @@ export default function AccessForm() {
   }, [press, guests, user_id]);
 
   return (
-    <ScrollView className="flex-1 bg-[#04020a] px-4 pt-10">
-      <Text className="text-[#F5F5F5] text-3xl font-semibold text-center mb-6 mt-5">
-        Nuevo acceso
-      </Text>
+   <View className="flex-1 bg-[#04020a]">
+     <ScrollView className="flex-1 bg-[#04020A] px-4 pt-10">
 
-      {/* Motivo */}
-      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-2 mx-auto'} text-white text-lg font-semibold`}>
-        Motivo de la visita
-      </Text>
+                 <BottonToIndex/>
+
+  {/* Título */}
+  <Text className="text-[#F5F5F5] text-3xl font-bold text-center mb-8 mt-5 tracking-wide">
+    Nuevo acceso
+  </Text>
+
+  {/* Motivo */}
+  <Text className="text-white text-lg font-semibold mb-2 mx-auto">
+    Motivo de la visita
+  </Text>
+
+  <TextInput
+    placeholder="Ej. Entrega de documentos"
+    placeholderTextColor="#8A8A9A"
+    value={acceso.motivo}
+    onChangeText={setMotivo}
+    className={`bg-[#131225] text-white p-3 rounded-xl mb-6 border border-[#2A2A40] ${isWeb ? 'w-[21rem] mx-auto' : ''}`}
+  />
+
+  {/* Fecha */}
+  <Text className="text-white text-lg font-semibold mb-2 mx-auto">
+    Selecciona fecha
+  </Text>
+
+  <View className={`${isWeb ? 'lg:w-[55%] mx-auto' : ''}`}>
+    <CustomDatePicker 
+      value={acceso.expiracion}
+      onChange={setFecha}
+      mode="date"
+    />
+  </View>
+
+  {!isValidDate(acceso.expiracion) && (
+    <Text className="text-red-500 text-center mx-auto mb-4">
+      Error en fecha (formato: YYYY-MM-DD){"\n"}o valida espacios.
+    </Text>
+  )}
+
+  {/* Agregar invitado */}
+  <Pressable onPress={addGuest} className="flex-row items-center mb-6 mx-auto mt-3">
+    <Ionicons name="add-circle-outline" size={isWeb ? 30 : 44} color="#ffffff" />
+    {isWeb && <Text className="text-white font-semibold ml-3 text-lg">Agregar invitado</Text>}
+  </Pressable>
+
+  {/* Invitados */}
+  {guests.map((guest, index) => (
+    <View 
+      key={index} 
+      className= {Platform.OS ==='web' ? "bg-[#1a1a2e] p-4 rounded-xl mb-6 w-[70%] lg:w-[45%] mx-auto":"bg-[#1a1a2e] p-4 rounded-xl mb-6"}
+      style={{ shadowColor: "#000", shadowOpacity: 0.25, shadowRadius: 7, elevation: 4 }}
+    >
+      <Text className="text-white font-semibold mb-3 text-lg">Invitado #{index + 1}</Text>
+
       <TextInput
-        placeholder="Ej. Entrega de documentos"
-        placeholderTextColor="#888"
-        value={acceso.motivo}
-        onChangeText={setMotivo}
-        className={`bg-[#1a1a2e] text-white p-3 rounded mb-6 ${isWeb ? 'w-[50%] mx-auto' : ''}`}
+        placeholder="Nombre"
+        placeholderTextColor="#8A8A9A"
+        value={guest.inv_name}
+        onChangeText={(text) => updateGuest(index, 'inv_name', text)}
+        className="bg-[#131225] text-white p-3 rounded-xl border border-[#2A2A40] mb-2"
       />
 
-      {/* Fecha, DEBO VER COMO HAGO PARA QUE ELIJA LA FECHA CON INTERFAZ */}
-      <Text className={`${isWeb ? 'mb-2 mx-auto' : 'mb-1 mx-auto'} text-white text-lg font-semibold`}>
-        Selecciona fecha
-      </Text>
-    
-      {/*Aca para cambiar la input de fecha  */}
-      <CustomDatePicker
-            value={acceso.expiracion}
-            onChange={setFecha}
-            mode="date"
-            
-        />
+      <TextInput
+        placeholder="Apellido"
+        placeholderTextColor="#8A8A9A"
+        value={guest.inv_lastname}
+        onChangeText={(text) => updateGuest(index, 'inv_lastname', text)}
+        className="bg-[#131225] text-white p-3 rounded-xl border border-[#2A2A40] mb-2"
+      />
 
-      {/* <TextInput
-        placeholder="Fecha de visita (YYYY-MM-DD)"
-        placeholderTextColor="#888"
-        value={acceso.expiracion}
-        onChangeText={setFecha}
-        className={`bg-[#1a1a2e] text-white p-3 rounded mb-2 ${isWeb ? 'w-[50%] mx-auto' : ''}`}
-      /> */}
-      {!isValidDate(acceso.expiracion) && (
-        <Text className="text-red-500 mb-4  mx-auto text-center">Error en fecha (formato: YYYY-MM-DD)  {"\n"} o valida espacios</Text>
+      <TextInput
+        placeholder="Documento"
+        placeholderTextColor="#8A8A9A"
+        value={guest.documento}
+        onChangeText={(text) => updateGuest(index, 'documento', text)}
+        className="bg-[#131225] text-white p-3 rounded-xl border border-[#2A2A40] mb-2"
+      />
+      {errors[index]?.documento && (
+        <Text className="text-red-500 mb-2">{errors[index].documento}</Text>
       )}
 
-      <Pressable onPress={addGuest} className="flex-row items-center mb-4 mx-auto mt-4">
-        <Ionicons name="add-circle-outline" size={isWeb ? 30 : 44} color="#fff" />
-        {isWeb && <Text className="text-white font-semibold ml-2">Agregar invitado</Text>}
+      <TextInput
+        placeholder="Contacto"
+        placeholderTextColor="#8A8A9A"
+        value={guest.contacto}
+        onChangeText={(text) => updateGuest(index, 'contacto', text)}
+        className="bg-[#131225] text-white p-3 rounded-xl border border-[#2A2A40] mb-3"
+      />
+
+      <Pressable onPress={() => setResponsable(guest.documento)}>
+        <Text
+          className={`mx-auto py-2 px-10 text-center font-semibold rounded-xl ${
+            guest.documento === acceso.responsable_id
+              ? "bg-green-600 text-white"
+              : "bg-[#35358F] text-white"
+          }`}
+        >
+          Responsable
+        </Text>
       </Pressable>
+    </View>
+  ))}
 
-      {guests.map((guest, index) => (
-        <View key={index} className="mb-6 p-4 rounded bg-[#0a0814] space-y-2">
-          <Text className="text-white font-semibold mb-2">Invitado #{index + 1}</Text>
+  {/* Botón Crear */}
+  <View className="flex justify-center items-center pb-14 mt-8">
+    <Pressable onPress={handleSubmit} disabled={loading}>
+      {({ pressed }) => (
+        <LinearGradient
+          colors={
+            loading
+              ? ['#555', '#555']
+              : pressed
+              ? ['#3336e6', '#3336e6']
+              : ['#ea5818', '#d846ef', '#5346e6']
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          className="flex-row items-center rounded-3xl px-10 py-3 mb-[48%]"
+          style={{ borderRadius: 22 }}
+        >
+          <Text className="text-white text-2xl font-bold">
+            {loading ? "Creando..." : "Crear"}
+          </Text>
+        </LinearGradient>
+      )}
+    </Pressable>
+  </View>
 
-          <TextInput
-            placeholder="Nombre"
-            placeholderTextColor="#aaa"
-            value={guest.inv_name}
-            onChangeText={(text) => updateGuest(index, 'inv_name', text)}
-            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
-          />
+  {/* Modal */}
+  <Modal
+    visible={modalVisible}
+    transparent
+    animationType="fade"
+    onRequestClose={() => setModalVisible(false)}
+  >
+    <View className="flex-1 justify-center items-center bg-black/70">
+      <View 
+        className={`${isWeb 
+          ? 'bg-[#272797]' 
+          : 'bg-[#ffffff]'
+        } rounded-xl p-6 w-4/5`}>
+        
+        <Text className="text-xl font-bold mb-3 text-center text-white">✅ Acceso creado</Text>
 
-          <TextInput
-            placeholder="Apellido"
-            placeholderTextColor="#aaa"
-            value={guest.inv_lastname}
-            onChangeText={(text) => updateGuest(index, 'inv_lastname', text)}
-            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
-          />
+        <Text className="text-gray-300 mb-3 text-center">
+          Este es el link de acceso:
+        </Text>
 
-          <TextInput
-            placeholder="Documento"
-            placeholderTextColor="#aaa"
-            value={guest.documento}
-            onChangeText={(text) => updateGuest(index, 'documento', text)}
-            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
-          />
-          {errors[index]?.documento && (
-            <Text className="text-red-500">{errors[index].documento}</Text>
-          )}
+        <Text className="text-blue-400 underline text-center break-words mb-5">
+          {accessLink}
+        </Text>
 
-            {/* Aca hay que validar que sea un numero válido, y en las demas poner un máximo de carácteres */}
-          <TextInput
-            placeholder="Contacto"
-            placeholderTextColor="#aaa"
-            value={guest.contacto}
-            onChangeText={(text) => updateGuest(index, 'contacto', text)}
-            className="bg-[#1a1a2e] text-white p-2 rounded my-1"
-          />
+        <Copipaste text={accessLink} />
 
-           <Pressable onPress={() => setResponsable(guest.documento)}>
-            <Text
-              className={`mx-auto py-1 font-semibold px-10 rounded ${
-                guest.documento === acceso.responsable_id ? 'bg-green-500' :'text-white bg-[#35358f]'
-              }`}
-            >
-              Responsable
-            </Text>
-          </Pressable>
-        </View>
-      ))}
-
-       <View className="flex justify-center items-center pb-10 mt-10">
-        <Pressable onPress={handleSubmit} disabled={loading}>
+        <Pressable onPress={() => setModalVisible(false)} className="mx-auto mt-4">
           {({ pressed }) => (
             <LinearGradient
               colors={
-                loading
-                  ? ['#555', '#555']
-                  : pressed
+                pressed
                   ? ['#3336e6', '#3336e6']
                   : ['#ea5818', '#d846ef', '#5346e6']
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="flex-row items-center space-x-2 rounded-3xl px-8 py-3"
-              style={{ borderRadius: 20 }}
+              className="px-6 py-3 rounded-3xl"
             >
-              <Text className="text-white text-2xl font-bold">
-                {loading ? "Creando..." : "Crear"}
-              </Text>
+              <Text className="text-white font-semibold text-center">Cerrar</Text>
             </LinearGradient>
           )}
         </Pressable>
-      </View>
 
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View className="flex-1 justify-center items-center bg-black/70">
-          <View className={`${isWeb ? 'bg-[#272797] rounded-xl p-6 w-4/5':'bg-[#fff] rounded-xl p-6 w-4/5' }`}>
-            <Text className="text-lg font-bold mb-4 text-center text-white">✅ Acceso creado</Text>
-            <Text className="text-gray-300 mb-4 text-center font-semibold">
-              Este es el link de acceso:
-            </Text>
-              <Text className="text-blue-400 underline text-center break-words mb-6">
-              {accessLink}
-            </Text>
-           <Copipaste text={accessLink}/>
+      </View>
+    </View>
+  </Modal>
 
  
-            <Pressable
-              onPress={() => setModalVisible(false)}
-              className="py-2 px-6 rounded-xl mx-auto"
-            >
-               {({pressed})=>(
-                <LinearGradient 
-              colors={
-                 
-                   pressed
-                  ? ['#3336e6', '#3336e6']
-                  : ['#ea5818', '#d846ef', '#5346e6']
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="flex-row items-center space-x-2 rounded-3xl px-5 py-3"
-              style={{ borderRadius: 20 }}  
-              >
 
-                <Text className='text-white font-semibold'>Cerrar</Text>
-              </LinearGradient>
-               )}
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+</ScrollView>
+
+
+
+{/* acuerdate que poninendo un flex-1 puedo hacer el scrollview dentro */}
+  {Platform.OS !== 'web' && (
+    <View 
+
+    className='bg-[#04020A]'
+     style={{
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      zIndex: 999,
+      elevation: 20,  
+    }}
+    >
+      <LinearGradient
+        colors={['#fff', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0.1 }}
+        className="flex-row items-center px-8 py-2 mb-1"
+      />
+ 
+      <ParteDeAbajo />
+    </View>
+  )}
+    </View>
+
+ 
+
   );
 }

@@ -55,7 +55,7 @@ export default function ShowQR() {
           )}
         </Pressable>
 
-        {activo && !loading && ( // 👈 Solo muestra el hash si no está cargando
+        {activo && !loading && (  
           <Text className="text-white mb-4 text-3xl mt-5 font-semibold">{hash}</Text>
         )}
 

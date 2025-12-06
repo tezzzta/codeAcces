@@ -11,7 +11,8 @@ import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 
   import * as ImagePicker from "expo-image-picker"
   import { Ionicons } from '@expo/vector-icons';
   import { ActivityIndicator } from 'react-native';
- 
+  import {ParteDeAbajo} from '../components/PartedeAbajo'
+  import { BottonToIndex } from '../components/BotonToIndex';
    //En las imágenes necesito buscar la manera de que al hacer cambios
   //  estos hagan fetch otra vez
     const imageSize = Platform.OS === 'web' ? 250 : 150;
@@ -247,10 +248,13 @@ useEffect(() => {
 
     return (
       <View className="flex-1 bg-[#04020a] p-6">
+                <BottonToIndex/>
+
         <Text className={Platform.OS == 'web' ?"text-white text-4xl font-semibold text-center mb-4 mt-5":"text-white text-4xl font-semibold text-center mb-4 mt-20"}>
           {nickname}
         </Text>
 
+       
         <View className="items-center mb-6">
           
           {
@@ -372,6 +376,28 @@ useEffect(() => {
             )}
           </Pressable>
         </View>
+             {Platform.OS !== 'web' && (
+    <View 
+
+    className='bg-[#04020A]'
+     style={{
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      zIndex: 999,
+      elevation: 20,  
+    }}
+    >
+      <LinearGradient
+        colors={['#fff', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0.3 }}
+        className="flex-row items-center px-8 py-2 mb-1"
+      />
+ 
+      <ParteDeAbajo />
+    </View>
+  )} 
       </View>
     );
   }
@@ -381,6 +407,7 @@ useEffect(() => {
       <View className="flex-row justify-between border-b border-[#444] pb-2">
         <Text className="text-white font-semibold">{label}</Text>
         <Text className="text-white">{value}</Text>
+        
       </View>
     );
   }

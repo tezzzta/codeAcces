@@ -1,6 +1,9 @@
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 import {useEffect} from 'react'
 import '../global.css';
+import Navbar from '../components/Navbar'
+import Footer from 'components/Footer';
 import { estadoLogin, estadoUsuario } from 'store/state';
 import {API_URL} from '../components/config'
 //NOTA: Al desplegar en web necesito eliminar 
@@ -41,8 +44,11 @@ export default function Layout() {
 
   return (
 
-    <Stack>
-      <Stack.Protected guard={loggIn}>
+     <>
+           {Platform.OS === 'web'&& <Navbar/>}
+
+     <Stack>
+       <Stack.Protected guard={loggIn}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={loggIn}>
@@ -64,5 +70,7 @@ export default function Layout() {
             <Stack.Screen name="showqr/[id]/[hash]" options={{ headerShown: false }} />
 
     </Stack>
+      {Platform.OS === 'web'&& <Footer/>}
+     </>
   );
 }

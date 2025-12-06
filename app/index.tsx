@@ -1,17 +1,18 @@
 import { View, Text, Pressable, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
-import RNPickerSelect from 'react-native-picker-select';
-import React from 'react';
+ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { estadoUsuario, estadoLogin, useAccesosStore} from "../store/state"
 import {API_URL} from '../components/config'
 
+import {ParteDeAbajo} from '../components/PartedeAbajo'
 
  export default function Index() {
    const user_id = estadoUsuario((state)=> state.id)
- 
+  
+   const nombre = estadoUsuario((state)=> state.nickname)
   const documento = estadoUsuario((state)=>state.documento)
   const isLogin = estadoLogin((state) => state.isLoggedIn)
   const setUsuario =  estadoUsuario((state) => state.setUsuario)
@@ -76,8 +77,11 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 //
 
   return (
-    <View className="flex-1 bg-[#04020a]">
-      <View className="flex items-center justify-center px-4 mt-10">
+    <View className="flex-1 bg-[#04020a]"
+    
+    >
+      <View className="flex items-center justify-center px-4 mt-10"
+      >
         <Text
           className={
             Platform.OS === 'web'
@@ -85,157 +89,168 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
               : 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-10'
           }
         >
-          Bienvenido de vuelta, user
+          Welcome back, {nombre}
         </Text>
       </View>
 
-      <View className="flex-1 items-center justify-center">
-        <LinearGradient
-          colors={['#ea5818', '#d846ef', '#5346e6']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          className={
-            Platform.OS === 'web'
-              ? 'flex-row items-center space-x-2 rounded-3xl px-8 py-3'
-              : 'flex-row items-center space-x-2 rounded-3xl px-4 py-3 gap-2'
+
+    {/* aca es la parte del medio que refactorizaremos */}
+      <View className= {Platform.OS ==='web'? "flex-1 items-center justify-center px-4 mb-10":"flex-1 items-center justify-center px-4"} 
+      >
+ 
+    <View
+      className={
+        Platform.OS === 'web'
+          ? "grid grid-cols-2 gap-4 w-full px-[10%] lg:px-[25%]"
+          : "flex flex-row flex-wrap justify-center gap-4"
+      }
+
+      
+    >
+
+      
+
+      {/* Historial de Accesos */}
+      <Pressable
+        onPress={() => router.push('/history')}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="time" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+            />             
+
+            <Text className="text-white font-semibold text-center">
+              Historial de Accesos
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>
+
+      {/* Visitantes Activos */}
+      <Pressable
+        onPress={() => {
+          router.push('/Activated');
+          if (user_id) {
+            threFetch();
           }
-          style={{ borderRadius: 24 }}
-        >
-          <Link href="/about" asChild>
-            <Pressable>
-              {({ pressed }) => (
-                <LinearGradient
-                  colors={
-                    pressed
-                      ? ['#3336e6', '#3336e6', '#3336e6']
-                      : ['#6366e6', '#6366e6', '#6366e6']
-                  }
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className={
-                    Platform.OS === 'web'
-                      ? 'flex-row items-center space-x-2 rounded-3xl px-4 py-3'
-                      : 'flex-row items-center space-x-2 rounded-3xl px-4 py-3'
-                  }
-                  style={{ borderRadius: 16 }}
-                >
-                  <Text className="text-white font-semibold">Nuevo Acceso</Text>
-                </LinearGradient>
-              )}
-            </Pressable>
-          </Link>
-
-          <View className="w-40 overflow-hidden rounded-lg bg-[#2a2a2a]">
-            <RNPickerSelect
-              onValueChange={(value) => {
-                setSelectedLanguage(value);
-                //EN ESTOS MISMOS IF, CREO QUE PUEDO HACER FETCH
-                if (value === 'go') {
-                  router.push('/about');
-                }
-                if(value=== 'js'){
-                  router.push('/history')
-        
-
-                }
-                //aca pienso en dejar el fetch pero con estado activated
-                //por defecto
-                //ya dentro elegir entre failed y activated
-                //igual debo crear el filtro por estado 
-                if(value==='py'){
-                  router.push('/Activated')
-                   if (user_id) {
-                       threFetch();
-                    }
-                }
-              }}
-              items={[
-                { label: 'Historial de Accesos', value: 'js' },
-                { label: 'Visitantes activos', value: 'py' },
-                { label: 'Nuevo acceso', value: 'go' },
-              ]}
-              placeholder={{ label: 'Revisa Accesos', value: " " }}
-              style={{
-                inputIOS: {
-                  color: '#F5F5F5',
-                  padding: 12,
-                  backgroundColor: '#2a2a2a',
-                  borderRadius: 10,
-                  fontSize: 16,
-                },
-                inputAndroid: {
-                  color: '#F5F5F5',
-                  height: 50,
-                  padding: 12,
-                  backgroundColor: '#2a2a2a',
-                  borderRadius: 20,
-                  fontSize: 16,
-                  zIndex: 10,
-                },
-                inputWeb: {
-                  color: '#F5F5F5',
-                  padding: 12,
-                  backgroundColor: '#2a2a2a',
-                  borderRadius: 10,
-                  width: '100%',
-                },
-                viewContainer: {
-                  width: '100%',
-                },
-                iconContainer: {
-                  top: 16,
-                  right: 10,
-                },
-              }}
+        }}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="checkmark" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
             />
-          </View>
-        </LinearGradient>
-      </View>
+            <Text className="text-white font-semibold text-center">
+              Visitantes Activos
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>
 
+          {/* este sera para profile */}
+      <Pressable
+        onPress={() => {
+          router.push('/person');
+          if (user_id) {
+            threFetch();
+          }
+        }}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="person" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+            />            
+            <Text className="text-white font-semibold text-center">
+              Perfil
+            </Text>
+          </LinearGradient>
+
+          
+        )}
+      </Pressable>
+ {/* Nuevo Acceso */}
+      <Pressable
+        onPress={() => router.push('/about')}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+            style={{borderRadius: 16}}
+          >
+            <Ionicons name="add" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+                  style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+                  />             
+            <Text className="text-white font-semibold text-center">
+              Nuevo Acceso
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>
+    </View>
+ </View>
+
+
+         
 
  {/* Parte de abajo xd  */}
-      <View className="flex-row items-center justify-center gap-10 mb-[17%]">
-        <Link href="/history" asChild>
-          <Pressable >
-            {({ pressed }) => (
-              <Ionicons
-                name="time-outline"
-                size={30}
-                color={pressed ? 'white' : '#DADADA'}
-                style={pressed ? { backgroundColor: '#6366e6', padding: 2, borderRadius: 20 } : {}}
-              />
-              
-              
-            )}
-          </Pressable>
-        </Link>
+        {Platform.OS !== 'web' &&  
+        <View >
+          <LinearGradient
+              colors={['#fff', '#04020a']}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0.3 }}
+              className="flex-row items-center px-8 py-3 mb-1"
+              style={{  opacity: 0.15}}
+              >
+              </LinearGradient>      
+           <ParteDeAbajo />
 
-        <Link href="/person" asChild>
-          <Pressable>
-            {({ pressed }) => (
-              <Ionicons
-                name="person-outline"
-                size={30}
-                color={pressed ? 'white' : '#DADADA'}
-                style={pressed ? { backgroundColor: '#6366e6', padding: 2, borderRadius: 20 } : {}}
-              />
-            )}
-          </Pressable>
-        </Link>
+          </View>
+          }
 
-        <Link href="/about" asChild>
-          <Pressable>
-            {({ pressed }) => (
-              <Ionicons
-                name="add-circle-outline"
-                size={30}
-                color={pressed ? 'white' : '#DADADA'}
-                style={pressed ? { backgroundColor: '#6366e6', padding: 2, borderRadius: 20 } : {}}
-              />
-            )}
-          </Pressable>
-        </Link>
-      </View>
     </View>
   );
 }

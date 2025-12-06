@@ -95,9 +95,7 @@ const handleNativeChange = (_event: any, selected?: Date | number | undefined) =
     return (
       <View className='mx-auto'>
         {label ? <Text className='text-black'>{label}</Text> : null}
-        
-
-            <Pressable   onPress={() => inputRef.current?.showPicker()}> 
+            <Pressable onPress={() => inputRef.current?.showPicker()}> 
             <input
           ref={inputRef}
           aria-label={label ?? 'date-picker'}
@@ -120,7 +118,7 @@ const handleNativeChange = (_event: any, selected?: Date | number | undefined) =
           disabled={disabled}
           style={{ padding: '8px 6rem',  borderRadius: 6 , }}
           
-          className='bg-[#4400ff] text-white font-semibold hover:bg-[#3901d3]'
+          className='bg-[#4400ff] text-white font-semibold hover:bg-[#3901d3] w-[98%]'
         />
 
             </Pressable>
@@ -170,12 +168,7 @@ const handleNativeChange = (_event: any, selected?: Date | number | undefined) =
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   onChange={handleNativeChange}
                 />
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 8 }}>
-                  <Pressable onPress={() => { onChange(null); close(); }} style={[styles.button, { marginRight: 8 }]}>
-                    <Text style={styles.buttonText}>Clear</Text>
-                  </Pressable>
-                  <Pressable onPress={close} style={styles.button}><Text style={styles.buttonText}>Done</Text></Pressable>
-                </View>
+            
               </View>
             )}
 
