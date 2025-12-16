@@ -7,9 +7,10 @@ import {
   Platform, 
   TouchableOpacity, 
   Modal, 
-  Image 
+  Image, 
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
-
 import { LinearGradient } from "expo-linear-gradient";
 import { useAccesosStore, estadoUsuario } from "store/state";
 import type { Acceso } from "../store/type";
@@ -18,9 +19,14 @@ import CustomDatePicker from "../components/DatePicker";
 import { API_URL } from "../components/config";
 import { ParteDeAbajo } from "../components/PartedeAbajo";
 import { BottonToIndex } from "../components/BotonToIndex";
+import * as storage from '../utils/auth'
 
 export default function HistorialAccesos() {
 
+  //token es el niga de southpark
+  const token = storage.getToken()
+
+    const [lodading, setLoading] = useState(false);
   // --- Estado general ---
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [visible, setVisible] = useState(false);
@@ -38,12 +44,13 @@ export default function HistorialAccesos() {
     }
 
     try {
+      setLoading(true);
       const resultado = await fetch(
         "https://backend-access.vercel.app/api/access/allFilter",
         {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Authorization":"Bearer" + " " + await token },
           body: JSON.stringify({
             user_id: user_id,
             fecha: selectedDate?.toISOString().split("T")[0],
@@ -52,7 +59,7 @@ export default function HistorialAccesos() {
       );
 
       const json = await resultado.json();
-
+      setLoading(false);
       if (Array.isArray(json)) setAccesos(json);
       else if (json?.data) setAccesos(json.data);
     } catch (err) {}
@@ -75,6 +82,8 @@ export default function HistorialAccesos() {
         border 
         border-white/5
       ">
+
+         
         <Text className="text-white font-bold text-xl">{item.motivo}</Text>
 
         <Text className="text-gray-300 text-sm mt-1 font-semibold">
@@ -199,11 +208,20 @@ export default function HistorialAccesos() {
   return (
     <View className="flex-1 bg-[#04020A]">
          
-
+         <ScrollView>
        <View className="mt-10 mx-auto w-full">
         <View className=" px-4 ">
                   <BottonToIndex />
-
+            <Modal animationType="fade" transparent visible={lodading}>
+                <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.6)]">
+                  <View className="bg-[#1A1A1A] px-8 py-6 rounded-2xl items-center">
+                    <ActivityIndicator size="large" color="#8b5cf6" />
+                    <Text className="text-white mt-4 text-lg font-semibold">
+                      Iniciando sesión...
+                    </Text>
+                  </View>
+                </View>
+              </Modal>
         </View>
        </View>
 
@@ -211,10 +229,10 @@ export default function HistorialAccesos() {
         className="
           text-white 
           mx-auto 
-          my-5 
+          my-4 
           text-2xl
           font-semibold
-          mt-20
+          
         "
       >
         Historial de accesos
@@ -289,12 +307,24 @@ export default function HistorialAccesos() {
         
       )}
 
-      <FlatList
+    
+
+      {accesos.length > 0 ? (
+               
+                    <FlatList
         data={accesos}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 120 }}
       />
+                ) : (
+                 <Text className="text-white text-center mt-10">
+                No se encontraron accesos.
+                  </Text>
+                )}
+
+      </ScrollView>
+
 
        {Platform.OS !== "web" && (
         <View
@@ -312,6 +342,7 @@ export default function HistorialAccesos() {
             start={{ x: 0, y: 1 }}
             end={{ x: 0, y: 0.2 }}
             className="flex-row items-center px-8 py-1"
+            style={{  opacity: 0.15}}
           />
 
           <ParteDeAbajo />

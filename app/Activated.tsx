@@ -1,13 +1,22 @@
+  //Desde el segundo poner la opcion de que si no hay acceso ni nada muestre un mensaje de que no hay accesos exitosos
+  //  en los ultimos dias
 import React, { useState } from "react";
-import { View, Text, Pressable, FlatList, Platform } from "react-native";
-import { useAccesosStore, estadoUsuario } from '../store/state'
+import { View, Text, Pressable, FlatList, Platform, Modal,ActivityIndicator } from "react-native";
+import { useAccesosStore, estadoUsuario, estadoLogin } from '../store/state'
  import { Acceso} from '../store/type'
 import {API_URL} from '../components/config'
 import { LinearGradient } from "expo-linear-gradient";
 import RNPickerSelect from 'react-native-picker-select';
 import { useRouter } from "expo-router";
+import {ParteDeAbajo} from '../components/PartedeAbajo'
+import { BottonToIndex } from "components/BotonToIndex";
+import * as storage from '../utils/auth'
 
 export default function UsuariosActivos() {
+
+  //token es el niga de southpark 
+  const token = storage.getToken()
+
   const accesoss = useAccesosStore((state) => state.accesos)
   const [expanded, setExpanded] = useState<string | " ">(" ");
  
@@ -18,7 +27,7 @@ export default function UsuariosActivos() {
     const user_id = estadoUsuario((state) => state.id)
     const[activo, setActivo] = useState(true)
      const setAccesos = useAccesosStore((state) => state.setAccesos)
-
+    const [loading, setLoading] = useState(false)
    const router = useRouter();
 
       //
@@ -28,11 +37,11 @@ export default function UsuariosActivos() {
      
         try{
           // const resultado = await fetch(`${API_URL}/api/access/allByUser`, {
-    
+          setLoading(true)
          const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',{
             method: "POST",
             credentials: "include",
-            headers: {"Content-type": "application/json"},
+            headers: { "Content-Type": "application/json", "Authorization":"Bearer" + " " + await token },
             body:JSON.stringify({
               user_id: user_id,
               state: activo
@@ -40,12 +49,12 @@ export default function UsuariosActivos() {
           }
         );
         const json = await resultado.json()
-    
+        
         if(Array.isArray(json)){
           setAccesos(json)
          } 
         
-        //NOTA, DEBO BORRAR TODOS LOS CONSOLE. 
+        
         else if (json?.data) {
         setAccesos(json.data);
          } else {
@@ -53,6 +62,7 @@ export default function UsuariosActivos() {
       }catch(err){
               
       }
+      setLoading(false)
      }
     
  let cambio;
@@ -68,6 +78,7 @@ if (activo) {
   
     return (
       <View className="bg-[#0a0814] p-4 rounded-xl mb-3">
+        
         
         <View className="flex-row justify-between items-center">
           <Text className="text-white font-bold text-base">{item.motivo}</Text>
@@ -153,9 +164,25 @@ if (activo) {
     );
   };
 
+
+  //Desde el segundo poner la opcion de que si no hay acceso ni nada muestre un mensaje de que no hay accesos exitosos
+  //  en los ultimos dias
   return (
     <View className="flex-1 bg-[#04020a]">
-      <Text className="text-white mx-auto my-5 text-[24px] font-semibold">
+       <Modal animationType="fade" transparent visible={loading}>
+                        <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.6)]">
+                          <View className="bg-[#1A1A1A] px-8 py-6 rounded-2xl items-center">
+                            <ActivityIndicator size="large" color="#8b5cf6" />
+                            <Text className="text-white mt-4 text-lg font-semibold">
+                              Iniciando sesión...
+                            </Text>
+                          </View>
+                        </View>
+                      </Modal>
+       <View className="px-6 pt-6">
+        <BottonToIndex/>
+       </View>
+      <Text className="text-white mx-auto my-2 text-[24px] font-semibold">
         Usuarios Activos
       </Text>
 
@@ -258,6 +285,20 @@ if (activo) {
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
       />
+           
+           {Platform.OS !== "web" && (
+         <View>
+          <LinearGradient
+            colors={['#fff', 'rgba(0,0,0,0)']}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0.3 }}
+            className="flex-row items-center px-8 py-2 mb-1"
+            style={{  opacity: 0.15}}
+          />
+          <ParteDeAbajo />
+         </View>
+          )}
+          
     </View>
   );
 }

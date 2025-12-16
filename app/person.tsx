@@ -2,8 +2,10 @@
 //un useEffect donde vuelva a hacer fetch con la info del cliente
 //actualizada (justo despues de actualizar) 
 //tambien debo guardar la foto en global y que la traigan al hacer login
+//Con lo anterior, necesito guardar la foto en el global (estado) para no tener que hacer fetch cada vez
 
-import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 'react-native';
+
+import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput, ScrollView } from 'react-native';
   import { LinearGradient } from 'expo-linear-gradient';
   import { estadoUsuario } from "../store/state";
   import { useState, useEffect, use } from 'react';
@@ -13,6 +15,9 @@ import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 
   import { ActivityIndicator } from 'react-native';
   import {ParteDeAbajo} from '../components/PartedeAbajo'
   import { BottonToIndex } from '../components/BotonToIndex';
+  import { includes } from 'eslint.config';
+  import * as storage from '../utils/auth'
+
    //En las imágenes necesito buscar la manera de que al hacer cambios
   //  estos hagan fetch otra vez
     const imageSize = Platform.OS === 'web' ? 250 : 150;
@@ -73,6 +78,42 @@ import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 
       ? URL.createObjectURL(archivo)
       : archivo.uri);
 
+  const [imageUri, setImageUri] = useState<string | null>(null);
+
+       useEffect(() => {
+              const imagenPreview = async () => {
+                try {
+                  const token = await storage.getToken();
+                  const id = estadoUsuario.getState().id;
+
+                  const res = await fetch(
+                    `https://backend-access.vercel.app/api/imagenPerfil/${id}`,
+                    {
+                      method: "GET",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    }
+                  );
+
+                  if (!res.ok) {
+                    console.log("Error backend:", res.status);
+                    return;
+                  }
+                  const blob = await res.blob();
+                  // 🔥 En RN se usa createObjectURL
+                  const imageUrl = URL.createObjectURL(blob);
+                  setImageUri(imageUrl);
+                } catch (error) {
+                  console.log("Error cargando imagen", error);
+                }
+              };
+
+              imagenPreview();
+            }, []);
+
+
+
   return (
      <View>
             <Text className='text-white mb-3 mx-auto font-semibold bg-black/70 px-2 py-1 rounded-md'>Cambiar foto</Text>
@@ -82,7 +123,7 @@ import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 
            
             {({ pressed }) => 
                 ( <View style={{ position: "relative", alignItems: "center" }}> 
-                  <Image source={{ uri: previewUri ?? `https://backend-access.vercel.app/api/imagenPerfil/${estadoUsuario.getState().id}` }} 
+                  <Image source={{ uri: previewUri ?? imageUri ?? '' }} 
                       style={{ width: imageSize, height: imageSize, borderRadius: imageSize / 2, }} 
                       /> 
                 <View pointerEvents="none" 
@@ -124,6 +165,11 @@ import { View, Text, Image, Platform, Pressable, Modal, Alert, TextInput } from 
 
 
   export default function Perfil() {
+    //token... pues ya se la saben
+
+    const token = storage.getToken()
+
+
     //DESPUES BORRO ESTO
     const [contar, setContar] = useState(0)
     const [loading, setLoading] = useState(false);
@@ -181,7 +227,7 @@ const [nuevoArchivo, setNuevoArchivo] = useState<ArchivoSeleccionado>(null);
       console.log("Foto perfil subiendo...")
       const nojoda = await fetch(`https://backend-access.vercel.app/api/fotoPerfil/`, {
         method: "POST",
-        
+        headers: {"Content-type": "application/json", "authorization":"Bearer" + " " + await token },        
         body: formData
       });
       console.log("Foto perfil subida")
@@ -202,7 +248,7 @@ const [nuevoArchivo, setNuevoArchivo] = useState<ArchivoSeleccionado>(null);
       const resultado = await fetch(`https://backend-access.vercel.app/api/changeContacto`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-type": "application/json", "authorization":"Bearer" + " " + await token },
         body: JSON.stringify({ id: id,  contacto: numero }),
       });
 
@@ -220,16 +266,20 @@ const [nuevoArchivo, setNuevoArchivo] = useState<ArchivoSeleccionado>(null);
   setContar(contar + 1); 
 };
 
-const [imagen, setImagen] = useState<string | ArrayBuffer | null>(null);
+  const [imagen, setImagen] = useState<string | ArrayBuffer | null>(null);
 
 
 useEffect(() => {
   const cargarImagen = async () => {
     setLoading(true);
+    console.log("Tokennn", token)
     try {
-      const res = await fetch(`https://backend-access.vercel.app/api/imagenPerfil/${id}`);
+      const res = await fetch(`https://backend-access.vercel.app/api/imagenPerfil/${id}` , {
+        method: "GET",
+        headers: { "authorization":"Bearer" + " " + await token },        
+      } );
       const blob = await res.blob();
-
+      console.log("BLOBBB", blob)
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagen(reader.result);
@@ -247,10 +297,13 @@ useEffect(() => {
 }, [id, contar]);
 
     return (
-      <View className="flex-1 bg-[#04020a] p-6">
-                <BottonToIndex/>
+      <View className="flex-1 bg-[#04020a] pt-6 w-full">
+        <ScrollView>
+                <View className='px-6'>
+                    <BottonToIndex/>
+                </View>
 
-        <Text className={Platform.OS == 'web' ?"text-white text-4xl font-semibold text-center mb-4 mt-5":"text-white text-4xl font-semibold text-center mb-4 mt-20"}>
+        <Text className={Platform.OS == 'web' ?"text-white text-4xl font-semibold text-center mb-4 mt-5":"text-white text-4xl font-semibold text-center mb-1 mt-5"}>
           {nickname}
         </Text>
 
@@ -277,10 +330,8 @@ useEffect(() => {
           />
             )
           }
-
           <Text className="text-white mt-2 text-lg">ID de cuenta: #{id}</Text>
         </View>
-
         <View
           className={
             Platform.OS == 'web'
@@ -331,7 +382,6 @@ useEffect(() => {
                                 setNumero(0);
                                 return;
                               }
-
                               const numeric = Number(value);
                               if (!isNaN(numeric)) {
                                 setNumero(numeric);
@@ -345,12 +395,9 @@ useEffect(() => {
                               <Text className={pressed?'text-white font-semibold bg-purple-400 p-2 rounded':'text-white font-semibold bg-purple-600 p-2 rounded'}>
                                         Guardar
                               </Text>
-
                             )}
                                </Pressable>
-
                    <Pressable onPress={()=>setModalVisible(false)}>
-
                   {/* cambiarlo por guardar y que acá se guarde de una vez en el backend, además de agregar un overload*/}
                                          <Text className='text-white font-semibold bg-purple-600 p-2 rounded'> Cerrar</Text>
                 </Pressable>
@@ -388,16 +435,22 @@ useEffect(() => {
       elevation: 20,  
     }}
     >
-      <LinearGradient
-        colors={['#fff', 'rgba(0,0,0,0)']}
-        start={{ x: 0, y: 1 }}
-        end={{ x: 0, y: 0.3 }}
-        className="flex-row items-center px-8 py-2 mb-1"
-      />
- 
-      <ParteDeAbajo />
     </View>
   )} 
+      </ScrollView>
+
+                     {Platform.OS !== "web" && (
+                       <View>
+                          <LinearGradient
+                          colors={['#fff', 'rgba(0,0,0,0)']}
+                          start={{ x: 0, y: 1 }}
+                          end={{ x: 0, y: 0.3 }}
+                          className="flex-row items-center px-8 py-2 mb-1"
+                          style={{  opacity: 0.15}}
+                        />
+                            <ParteDeAbajo />
+                       </View>
+                        )}
       </View>
     );
   }

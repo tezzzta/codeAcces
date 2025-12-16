@@ -7,6 +7,8 @@ import CustomDatePicker from '../components/DatePicker'
 import {ParteDeAbajo} from '../components/PartedeAbajo'
   import * as Clipboard from 'expo-clipboard';
 import {BottonToIndex} from '../components/BotonToIndex'
+import * as storage from '../utils/auth';
+
 type texxto ={
   text: string;
 }
@@ -55,6 +57,10 @@ interface ValidationError {
 // Por lo cual documentaré
 
 export default function AccessForm() {
+
+  //token es el negro de southpark
+  const token = storage.getToken()
+
   //variable user_id  traida del estado 
   const user_id = estadoUsuario((state) => state.id);
   //setfecha cambia la fecha del estado
@@ -145,7 +151,7 @@ export default function AccessForm() {
          const response = await fetch('https://backend-access.vercel.app/api/access',{
 
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+               headers: { "Content-Type": "application/json", "Authorization":"Bearer" + " " + await token },
               body: JSON.stringify({
               motivo: acceso.motivo,
               expiracion: acceso.expiracion,
@@ -389,6 +395,7 @@ export default function AccessForm() {
         colors={['#fff', 'rgba(0,0,0,0)']}
         start={{ x: 0, y: 1 }}
         end={{ x: 0, y: 0.1 }}
+        style={{  opacity: 0.15}}
         className="flex-row items-center px-8 py-2 mb-1"
       />
  

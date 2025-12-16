@@ -16,7 +16,7 @@ export default function ShowQR() {
     const getQR = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://backend-access.vercel.app/api/qrcode/${id}/${hash}`);
+        const res = await fetch(`https://backend-access.vercel.app/apii/qrcode/${id}/${hash}`);
         const data = await res.json();  
         const { photo } = data;
         setQr(photo);

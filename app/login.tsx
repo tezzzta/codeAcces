@@ -1,11 +1,24 @@
 
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Pressable, Platform } from "react-native";
+import { View, Text, TextInput, Pressable, Platform, Modal, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { estadoUsuario, estadoLogin } from '../store/state';
-import {API_URL} from '../components/config'
-export default function Login() {
+import {isAdminStore} from '../store/Admin'
+// import {API_URL} from '../components/config'
+import * as storage from '../utils/auth';
 
+function ElLogin() {
+
+  //Para guardar el admin mientras
+
+  const admin = isAdminStore((state) => state.isAdmin)
+  const setIsAdmin = isAdminStore((state) => state.setIsAdmin)
+
+  const save =  storage.saveToken;
+  const get   =  storage.getToken;
+  const del   =  storage.deleteToken;
+
+  const [loadingLogin, setLoadingLogin] = useState(false);
 
   const [documento, Setdocumento] = useState("");
   const [password, setPassword] = useState("");
@@ -25,28 +38,38 @@ export default function Login() {
     try {
       // const response = await fetch(`${API_URL}/api/login`, {
       //Acá podemos cambiar para pruebas y ya despliegue
-      const response = await fetch("https://backend-access.vercel.app/api/login", {
+      setLoadingLogin(true)
+
+      const response = await fetch("https://backend-access.vercel.app/apii/login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ documento, password })
       });
+
       const json = await response.json();
-      if (json.message === 'Login exitoso') {
+      
+
+      if(json.message === 'Login exitoso') {
+                setIsAdmin(json.admini)
         cambioDocumento(Number(documento));
         
 
         setLogueado(true);
-         alert("Logueado mi prro");
+        setLoadingLogin(false)
+        save(json.token)
 
-         
+        console.log("Token guardado:", json.token);
+
        } else {
         alert("Usuario o contraseña incorrecta");
+               setLoadingLogin(false)
+
       }
     } catch (err) {
       setLogueado(false);
+      setLoadingLogin(false)
      }
- 
   };
              
 
@@ -54,14 +77,23 @@ useEffect(() => {
    if(logueado){
  
     setIsLoggedIn(true)
-
-  }
+   }
 }, [logueado]);
  
 
   
   return (
-    <View className="flex-1 bg-[#04020a] justify-center px-6">
+    <View className={Platform.OS == 'web' ? "flex-1 bg-[#04020a] justify-center px-6": "flex-1 justify-center px-6"}>
+      <Modal animationType="fade" transparent visible={loadingLogin}>
+        <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.6)]">
+          <View className="bg-[#1A1A1A] px-8 py-6 rounded-2xl items-center">
+            <ActivityIndicator size="large" color="#8b5cf6" />
+            <Text className="text-white mt-4 text-lg font-semibold">
+              Iniciando sesión...
+            </Text>
+          </View>
+        </View>
+      </Modal>
       <Text
         className={
           Platform.OS === "web"
@@ -116,3 +148,40 @@ useEffect(() => {
     </View>
   );
 }
+
+
+
+export default function Login() {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#04020a' }}>
+      {Platform.OS === 'web' ? (
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: '15%',
+          }}
+        >
+          <ElLogin />
+        </View>
+      ) : (
+        <LinearGradient
+          colors={["#04020a", "#04020a", "#23074d", "#04020a", "#04020a"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            flex: 1,
+            paddingVertical: 20,
+            paddingHorizontal: 10,
+            width: "100%",
+            alignSelf: "center",
+            minHeight: 300,
+          }}
+        >
+          <ElLogin />
+        </LinearGradient>
+      )}
+      
+    </View>
+  );
+}
+

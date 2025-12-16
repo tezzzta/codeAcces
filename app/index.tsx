@@ -6,10 +6,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { estadoUsuario, estadoLogin, useAccesosStore} from "../store/state"
 import {API_URL} from '../components/config'
-
+import * as storage from '../utils/auth';
 import {ParteDeAbajo} from '../components/PartedeAbajo'
+import {isAdminStore } from '../store/Admin'
 
  export default function Index() {
+
+  const isAdmin = isAdminStore((state)=> state.isAdmin)
+  //token es el nigga de southpark
+  const token = storage.getToken()
    const user_id = estadoUsuario((state)=> state.id)
   
    const nombre = estadoUsuario((state)=> state.nickname)
@@ -45,7 +50,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
      const resultado = await fetch('https://backend-access.vercel.app/api/access/allByUser',{
         method: "POST",
         credentials: "include",
-        headers: {"Content-type": "application/json"},
+        headers: {"Content-type": "application/json", "authorization":"Bearer" + " " + await token },
         body:JSON.stringify({
           user_id: user_id,
           state: true
@@ -229,6 +234,60 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
           </LinearGradient>
         )}
       </Pressable>
+
+       {isAdmin &&(<Pressable
+        onPress={() => router.push('/history')}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="time" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+            />             
+
+            <Text className="text-white font-semibold text-center">
+              PRUEBA ADMIN
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>) }
+
+      {isAdmin &&(<Pressable
+        onPress={() => router.push('/history')}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="time" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+            />             
+
+            <Text className="text-white font-semibold text-center">
+              PRUEBA ADMIN
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>) }
     </View>
  </View>
 

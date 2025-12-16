@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Acceso, Invitado } from "./type";
 
 interface Usuario {
@@ -214,3 +213,4 @@ export const enviarAcceso =  create<enviarAccesos>((set)=>({
   setResponsable: (responsable_id) => set((state) => ({acceso:{ ...state.acceso, responsable_id}})),
   setFecha : (expiracion) => set((state) => ({acceso:{ ...state.acceso, expiracion}}))
 }));
+

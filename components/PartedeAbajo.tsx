@@ -14,7 +14,7 @@ export const ParteDeAbajo = () => {
 
     
     <View>
-      <View className="flex-row items-center justify-center gap-10 mb-[17%]">
+      <View className="flex-row items-center justify-center gap-10 mb-[11%]">
 
         {/* HISTORY */}
         <Link href="/history" asChild>
