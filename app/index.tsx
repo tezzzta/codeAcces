@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
  import React from 'react';
@@ -90,8 +90,8 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
         <Text
           className={
             Platform.OS === 'web'
-              ? 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-[8%]'
-              : 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-10'
+              ? 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-[8%] mb-[1px] lg:mb-[2%] lg:mt-[2%]'
+              : 'text-[#F5F5F5] text-[30px] font-semibold text-center mt-[8%] mb-[5%]'
           }
         >
           Welcome back, {nombre}
@@ -100,7 +100,14 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 
 
     {/* aca es la parte del medio que refactorizaremos */}
-      <View className= {Platform.OS ==='web'? "flex-1 items-center justify-center px-4 mb-10":"flex-1 items-center justify-center px-4"} 
+       <ScrollView 
+       contentContainerStyle={{ paddingBottom: 10 }}
+       showsVerticalScrollIndicator={false}
+       >
+        <View className= {
+          Platform.OS ==='web'? 
+          "flex-1 items-center justify-center px-4 mb-10":
+          "flex-1 items-center justify-center px-4"} 
       >
  
     <View
@@ -236,7 +243,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
       </Pressable>
 
        {isAdmin &&(<Pressable
-        onPress={() => router.push('/history')}
+        onPress={() => router.push('/check')}
         className="flex-1 min-w-[30%]"
       >
         {({ pressed }) => (
@@ -251,19 +258,19 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
             end={{ x: 1, y: 0 }}
             className="rounded-2xl p-4"
           >
-         <Ionicons name="time" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+         <Ionicons name="search" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
           style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
             />             
 
             <Text className="text-white font-semibold text-center">
-              PRUEBA ADMIN
+              Check Usuario/Invitado
             </Text>
           </LinearGradient>
         )}
       </Pressable>) }
 
       {isAdmin &&(<Pressable
-        onPress={() => router.push('/history')}
+        onPress={() => router.push('/usuarioCrear')}
         className="flex-1 min-w-[30%]"
       >
         {({ pressed }) => (
@@ -278,18 +285,45 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
             end={{ x: 1, y: 0 }}
             className="rounded-2xl p-4"
           >
-         <Ionicons name="time" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+         <Ionicons name="person-add" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
           style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
             />             
 
             <Text className="text-white font-semibold text-center">
-              PRUEBA ADMIN
+              Crear nuevo usuario
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>) }
+      {isAdmin &&(<Pressable
+        onPress={() => router.push('/scanQr')}
+        className="flex-1 min-w-[30%]"
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#dd3500', '#dd3500', '#dd3500']
+                : ['#6366e6', '#6366e6', '#6366e6']
+            }
+            style={{borderRadius: 16}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="rounded-2xl p-4"
+          >
+         <Ionicons name="qr-code" size={38} color={pressed ? "#E3E3E3" : "#E3E3E3"} 
+          style={{ marginBottom: 1, backgroundColor: pressed ? "#dd3500" : "transparent", padding: 6, borderRadius: 50, margin: 'auto' }}
+            />             
+
+            <Text className="text-white font-semibold text-center">
+              Escanear Código
             </Text>
           </LinearGradient>
         )}
       </Pressable>) }
     </View>
  </View>
+       </ScrollView>
 
 
          

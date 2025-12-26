@@ -8,7 +8,6 @@ import {
   TouchableOpacity, 
   Modal, 
   Image, 
-  ScrollView,
   ActivityIndicator
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,7 +28,8 @@ export default function HistorialAccesos() {
     const [lodading, setLoading] = useState(false);
   // --- Estado general ---
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [qrVisible, setQrVisible] = useState<string | null>(null);
+
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const user_id = estadoUsuario((state) => state.id);
@@ -59,16 +59,18 @@ export default function HistorialAccesos() {
       );
 
       const json = await resultado.json();
+      console.log("Historial fetch:", json);
       setLoading(false);
       if (Array.isArray(json)) setAccesos(json);
       else if (json?.data) setAccesos(json.data);
     } catch (err) {}
   };
 
-  // --- Componente de item ---
+  
   const renderItem = ({ item }: { item: Acceso }) => {
     const isExpanded = expanded === String(item.id);
-
+      const qrVisible = String(item.credenciales?.qr_url)
+      console.log("estooo", qrVisible)
     return (
       <View className="
         bg-[#0B0A16] 
@@ -104,7 +106,7 @@ export default function HistorialAccesos() {
             mt-3 
             w-[120px]
           "
-          onPress={() => setVisible(true)}
+          onPress={() => setQrVisible(item.credenciales?.qr_url ?? null)}
         >
           <Text className="text-white text-center font-semibold">Mostrar QR</Text>
         </TouchableOpacity>
@@ -173,18 +175,26 @@ export default function HistorialAccesos() {
           </View>
         )}
 
-        {/* Modal QR */}
+        
+      </View>
+    );
+  };
+
+  return (
+    <View className="flex-1 bg-[#04020A]">
+         
+
+          {/* Modal QR */}
         <Modal
           transparent
           animationType="fade"
-          visible={visible}
-          onRequestClose={() => setVisible(false)}
-        >
+          visible={!!qrVisible}
+          onRequestClose={() => setQrVisible(null)}        >
           <View className="flex-1 bg-black/70 justify-center items-center px-6">
             <View className="bg-neutral-800 p-4 rounded-xl items-center border border-white/10">
-              {item.credenciales?.qr_url ? (
+              {qrVisible? (
                 <Image
-                  source={{ uri: item.credenciales.qr_url }}
+                  source={{ uri: qrVisible}}
                   style={{ width: 250, height: 250 }}
                   className="rounded-lg"
                 />
@@ -195,20 +205,13 @@ export default function HistorialAccesos() {
 
             <TouchableOpacity
               className="bg-red-600 mt-10 px-6 py-3 rounded-xl"
-              onPress={() => setVisible(false)}
+              onPress={() => setQrVisible(null)}
             >
               <Text className="text-white font-bold">Cerrar</Text>
             </TouchableOpacity>
           </View>
         </Modal>
-      </View>
-    );
-  };
-
-  return (
-    <View className="flex-1 bg-[#04020A]">
-         
-         <ScrollView>
+         <View>
        <View className="mt-10 mx-auto w-full">
         <View className=" px-4 ">
                   <BottonToIndex />
@@ -323,7 +326,7 @@ export default function HistorialAccesos() {
                   </Text>
                 )}
 
-      </ScrollView>
+      </View>
 
 
        {Platform.OS !== "web" && (

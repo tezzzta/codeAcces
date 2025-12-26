@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { enviarAcceso, estadoUsuario } from '../store/state';
 import CustomDatePicker from '../components/DatePicker'
 import {ParteDeAbajo} from '../components/PartedeAbajo'
-  import * as Clipboard from 'expo-clipboard';
+import * as Clipboard from 'expo-clipboard';
 import {BottonToIndex} from '../components/BotonToIndex'
 import * as storage from '../utils/auth';
 

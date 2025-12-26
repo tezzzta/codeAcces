@@ -82,8 +82,17 @@ export default function Layout() {
       <Stack.Protected guard={!loggIn}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack.Protected>
+
+      <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="check" options={{ headerShown: false }} />
+      </Stack.Protected>
+      
+       <Stack.Protected guard={loggIn}>
+        <Stack.Screen name="usuarioCrear" options={{ headerShown: false }} />
+      </Stack.Protected>
             <Stack.Screen name="showqr/[id]/[hash]" options={{ headerShown: false }} />
      </Stack>
+
      
       {Platform.OS === 'web'&& <Footer/>}
 
