@@ -21,6 +21,7 @@ interface Usuario {
 
 }
 
+//Necesito cambiar esto para que id sea un puto string
 export const estadoUsuario = create<Usuario>((set) => ({
     nickname: "",
     contacto: 0,  

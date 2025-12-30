@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import {ParteDeAbajo} from '../components/PartedeAbajo'
+import {BottonToIndex} from "../components/BotonToIndex";
 
 
 type TipoBusqueda = "usuarios" | "invitados";
@@ -24,12 +25,12 @@ export default function BuscarPersonas() {
   const [valor, setValor] = useState("");
 
   const ejecutarBusqueda = () => {
+    console.log("Ejecutando búsqueda...", valor);
     if (!valor.trim()) {
       alert("Ingresa un valor para buscar");
       return;
     }
 
-    // 🔥 Aquí conectas con tu fetch
     console.log({
       tipo,
       campo,
@@ -39,7 +40,15 @@ export default function BuscarPersonas() {
 
   return (
     <View className="h-full w-full bg-[#0B0A16]">
-         <View
+         {Platform.OS !== 'web' && (
+      <View className="pt-6 bg-zinc-900">
+        <View className="px-4 pt-2 bg-zinc-950">
+          <BottonToIndex />
+        </View>
+      </View>
+    )}
+
+     <View
       className="
         bg-[#0B0A16]
         p-5
@@ -50,12 +59,11 @@ export default function BuscarPersonas() {
         border-white/10
       "
     >
-      <Text className="text-white text-xl font-bold mb-4 text-center">
+       <Text className="text-white text-xl font-bold mb-4 text-center">
         Buscar personas
       </Text>
 
-      {/* Tipo de persona */}
-      <Text className="text-gray-300 mb-2 font-semibold">
+       <Text className="text-gray-300 mb-2 font-semibold">
         ¿Qué deseas buscar?
       </Text>
 
@@ -146,6 +154,7 @@ export default function BuscarPersonas() {
                 ? ["#383AE6", "#383AE6"]
                 : ["#EA5818", "#D846EF", "#5346E6"]
             }
+            style={{borderRadius: 16}}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="rounded-2xl py-3 mx-auto px-9"
@@ -157,7 +166,31 @@ export default function BuscarPersonas() {
         )}
       </Pressable>
     </View>
-    {Platform.OS !== 'web' &&  <View><ParteDeAbajo/></View>}
+
+
+ {Platform.OS !== 'web' && (
+    <View 
+
+    className='bg-[#04020A]'
+     style={{
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      zIndex: 999,
+      elevation: 20,  
+    }}
+    >
+      <LinearGradient
+        colors={['#fff', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0.1 }}
+        style={{  opacity: 0.15}}
+        className="flex-row items-center px-8 py-2 mb-1"
+      />
+ 
+      <ParteDeAbajo />
     </View>
+  )}
+        </View>
   );
 }

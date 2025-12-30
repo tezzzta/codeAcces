@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "Fast Access",
+    "slug": "Fast-Access",
     "version": "1.0.0",
     "web": {
       "build": "metro",
@@ -17,7 +17,7 @@
       "expo-secure-store"
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "scheme": "expo-app",
     "splash": {

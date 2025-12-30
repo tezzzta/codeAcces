@@ -195,10 +195,16 @@ export default function AccessForm() {
 
   return (
    <View className="flex-1 bg-[#04020a]">
-     <ScrollView className="flex-1 bg-[#04020A] px-4 pt-10">
+     {Platform.OS !== 'web' && (
+              <View className="pt-6 bg-zinc-900">
+                <View className="px-4 pt-2 bg-zinc-950">
+                  <BottonToIndex />
+                </View>
+              </View>
+            )}
+     <ScrollView className="flex-1 bg-[#04020A] px-4 pt-1">
 
-                 <BottonToIndex/>
-
+        
   {/* Título */}
   <Text className="text-[#F5F5F5] text-3xl font-bold text-center mb-8 mt-5 tracking-wide">
     Nuevo acceso

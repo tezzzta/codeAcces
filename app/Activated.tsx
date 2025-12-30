@@ -169,6 +169,13 @@ if (activo) {
   //  en los ultimos dias
   return (
     <View className="flex-1 bg-[#04020a]">
+      {Platform.OS !== 'web' && (
+              <View className="pt-6 bg-zinc-900">
+                <View className="px-4 pt-2 bg-zinc-950">
+                  <BottonToIndex />
+                </View>
+              </View>
+            )}
        <Modal animationType="fade" transparent visible={loading}>
                         <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.6)]">
                           <View className="bg-[#1A1A1A] px-8 py-6 rounded-2xl items-center">
@@ -180,7 +187,7 @@ if (activo) {
                         </View>
                       </Modal>
        <View className="px-6 pt-6">
-        <BottonToIndex/>
+         
        </View>
       <Text className="text-white mx-auto my-2 text-[24px] font-semibold">
         Usuarios Activos
@@ -286,18 +293,29 @@ if (activo) {
         contentContainerStyle={{ padding: 16 }}
       />
            
-           {Platform.OS !== "web" && (
-         <View>
-          <LinearGradient
-            colors={['#fff', 'rgba(0,0,0,0)']}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 0, y: 0.3 }}
-            className="flex-row items-center px-8 py-2 mb-1"
-            style={{  opacity: 0.15}}
-          />
-          <ParteDeAbajo />
-         </View>
-          )}
+          {Platform.OS !== 'web' && (
+    <View 
+
+    className='bg-[#04020A]'
+     style={{
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      zIndex: 999,
+      elevation: 20,  
+    }}
+    >
+      <LinearGradient
+        colors={['#fff', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0.1 }}
+        style={{  opacity: 0.15}}
+        className="flex-row items-center px-8 py-2 mb-1"
+      />
+ 
+      <ParteDeAbajo />
+    </View>
+  )}
           
     </View>
   );

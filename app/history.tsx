@@ -183,7 +183,13 @@ export default function HistorialAccesos() {
   return (
     <View className="flex-1 bg-[#04020A]">
          
-
+{Platform.OS !== 'web' && (
+              <View className="pt-6 bg-zinc-900">
+                <View className="px-4 pt-2 bg-zinc-950">
+                  <BottonToIndex />
+                </View>
+              </View>
+            )}
           {/* Modal QR */}
         <Modal
           transparent
@@ -214,8 +220,7 @@ export default function HistorialAccesos() {
          <View>
        <View className="mt-10 mx-auto w-full">
         <View className=" px-4 ">
-                  <BottonToIndex />
-            <Modal animationType="fade" transparent visible={lodading}>
+             <Modal animationType="fade" transparent visible={lodading}>
                 <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.6)]">
                   <View className="bg-[#1A1A1A] px-8 py-6 rounded-2xl items-center">
                     <ActivityIndicator size="large" color="#8b5cf6" />

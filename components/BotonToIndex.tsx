@@ -19,7 +19,7 @@ export const BottonToIndex = () =>{
            <Pressable className="mb-4 items-start justify-center">
                      
                          {({pressed})=>( 
-                            <Text className={`text-white text-[16px] font-semibold   p-4 rounded-lg ${pressed ? "bg-[#dd3500]":"bg-[#9370DB]"}`}>  <Ionicons
+                            <Text className={`text-white text-[16px] font-semibold   px-4 py-2 rounded-lg ${pressed ? "bg-[#dd3500]":"bg-purple-600"}`}>  <Ionicons
                     name="arrow-back"
                     size={16}
                     color={"#fff"}

@@ -297,11 +297,15 @@ useEffect(() => {
 }, [id, contar]);
 
     return (
-      <View className="flex-1 bg-[#04020a] pt-6 w-full">
+      <View className="flex-1 bg-[#04020a]   w-full">
         <ScrollView>
-                <View className='px-6'>
-                    <BottonToIndex/>
+                {Platform.OS !== 'web' && (
+              <View className="pt-6 bg-zinc-900">
+                <View className="px-4 pt-2 bg-zinc-950">
+                  <BottonToIndex />
                 </View>
+              </View>
+            )}
 
         <Text className={Platform.OS == 'web' ?"text-white text-4xl font-semibold text-center mb-4 mt-5":"text-white text-4xl font-semibold text-center mb-1 mt-5"}>
           {nickname}

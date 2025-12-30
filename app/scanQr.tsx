@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import type { Credencial } from "../store/type";
 
-import {API_URL} from '../components/config'
+import {estadoUsuario} from '../store/state'
 import { LinearGradient } from "expo-linear-gradient";
 import { CameraView, Camera } from "expo-camera";
 import { ParteDeAbajo } from "../components/PartedeAbajo";
@@ -27,6 +27,7 @@ export default function EscanearQR() {
   const [qrData, setQrData] = useState<string>("");
   const [loadingLogin, setLoadingLogin] = useState(false);
 
+  const user_id = estadoUsuario((state) => state.id);
   type RegAcceso = {
     id: number;
     motivo: string;
@@ -77,6 +78,56 @@ export default function EscanearQR() {
   setLoadingLogin(false);
 };
 
+
+  const changeAdmin = async () => {
+  console.log("Validando acceso...");
+  const access_id = accesoParcial?.registro_accesos?.[0]?.id;
+
+  if (!access_id) {
+    Alert.alert("Error", "No se encontró un registro de acceso para validar");
+    return;
+  }
+  if (!user_id) {
+    Alert.alert("Error", "Usuario no identificado");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://backend-access.vercel.app/adi/access/confirm",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user_id, access_id: access_id }),
+      }
+    );
+
+    const json = await response.json();
+    console.log("Response text:", json);
+     
+    // console.log("Body:", json.access.message, "YYYY", json.message);
+
+    if (!response.ok) {
+       if (json.details === "La credencial está expirada") {
+      Alert.alert("Error", "La credencial expiró");
+      return;
+    }
+      Alert.alert("Error", json.message || `Error del servidor (${response.status})`);
+      return;
+    }
+
+    if (json.access.message === "Este acceso ya fue validado") {
+      Alert.alert("Atención", "Este acceso ya fue validado");
+      return;
+    }
+    Alert.alert("Éxito", "Acceso validado correctamente");
+  } catch (error) {
+    console.error("Fetch error:", error);
+    Alert.alert("Error", "No se pudo validar el acceso");
+  }
+};
+  
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     if (scanned) return;
 
@@ -236,6 +287,12 @@ export default function EscanearQR() {
 
       {/* BOTÓN CERRAR */}
       <TouchableOpacity
+      className="bg-green-500 rounded-md py-2"
+      onPress={()=> changeAdmin()}
+      >
+         <Text className="text-white mx-auto">Validar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
         className="bg-red-600 mt-6 py-3 rounded-xl"
         onPress={() => setAccesoParcial(null)}
       >
@@ -354,6 +411,7 @@ export default function EscanearQR() {
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
+                style={{ borderRadius: 14 }}
                 className="rounded-2xl py-3 mx-auto px-9"
               >
                 <Text className="text-white font-bold text-center text-lg">
@@ -369,27 +427,29 @@ export default function EscanearQR() {
       </View>
        </ScrollView>
 
-      {Platform.OS !== "web" && (
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            zIndex: 50,
-            elevation: 20,
-          }}
-        >
-            <LinearGradient
-                          colors={['#fff', '#0B0A16']}
-                          start={{ x: 0, y: 1 }}
-                          end={{ x: 0, y: 0.7 }}
-                          className="flex-row items-center px-8 py-3 mb-2"
-                          style={{  opacity: 0.15}}
-                          >
-                          </LinearGradient>
-          <ParteDeAbajo />
-        </View>
-      )}
+      {Platform.OS !== 'web' && (
+    <View 
+
+    className='bg-[#04020A]'
+     style={{
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      zIndex: 999,
+      elevation: 20,  
+    }}
+    >
+      <LinearGradient
+        colors={['#fff', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0.1 }}
+        style={{  opacity: 0.15}}
+        className="flex-row items-center px-8 py-2 mb-1"
+      />
+ 
+      <ParteDeAbajo />
+    </View>
+  )}
     </View>
   );
 }

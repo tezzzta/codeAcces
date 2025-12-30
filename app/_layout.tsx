@@ -60,42 +60,46 @@ export default function Layout() {
   return (
 
      <>
-           {Platform.OS === 'web'&& <Navbar/>}
+  {Platform.OS === 'web' && <Navbar />}
 
-     <Stack>
-       <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="about" options={{ headerShown: false }} />
-      </Stack.Protected>
-      {/*  validar las rutas, y poner o quitar la mayuscula del inicio*/}
-      <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="Activated" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="person" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="history" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!loggIn}>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-      </Stack.Protected>
+  <Stack screenOptions={{ headerShown: false }}>
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="index" />
+    </Stack.Protected>
 
-      <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="check" options={{ headerShown: false }} />
-      </Stack.Protected>
-      
-       <Stack.Protected guard={loggIn}>
-        <Stack.Screen name="usuarioCrear" options={{ headerShown: false }} />
-      </Stack.Protected>
-            <Stack.Screen name="showqr/[id]/[hash]" options={{ headerShown: false }} />
-     </Stack>
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="about" />
+    </Stack.Protected>
 
-     
-      {Platform.OS === 'web'&& <Footer/>}
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="Activated" />
+    </Stack.Protected>
 
-     </>
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="person" />
+    </Stack.Protected>
+
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="history" />
+    </Stack.Protected>
+
+    <Stack.Protected guard={!loggIn}>
+      <Stack.Screen name="login" />
+    </Stack.Protected>
+
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="check" />
+    </Stack.Protected>
+
+    <Stack.Protected guard={loggIn}>
+      <Stack.Screen name="usuarioCrear" />
+    </Stack.Protected>
+
+       <Stack.Screen name="showqr/[id]/[hash]" />
+   </Stack>
+
+  {Platform.OS === 'web' && <Footer />}
+</>
+
   );
 }
