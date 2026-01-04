@@ -168,7 +168,7 @@ if (activo) {
   //Desde el segundo poner la opcion de que si no hay acceso ni nada muestre un mensaje de que no hay accesos exitosos
   //  en los ultimos dias
   return (
-    <View className="flex-1 bg-[#04020a]">
+    <View className="flex-1 bg-[#0B0A16]">
       {Platform.OS !== 'web' && (
               <View className="pt-6 bg-zinc-900">
                 <View className="px-4 pt-2 bg-zinc-950">

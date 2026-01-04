@@ -5,10 +5,15 @@ import {
   Pressable,
   TextInput,
   Platform,
+  Alert,
+  ScrollView,
 } from "react-native";
+import { API_URL } from "components/config";
 import { LinearGradient } from "expo-linear-gradient";
 import {ParteDeAbajo} from '../components/PartedeAbajo'
 import {BottonToIndex} from "../components/BotonToIndex";
+import { ResultadoPersona } from "../components/ResultadoPersona";
+import * as storage from '../utils/auth';
 
 
 type TipoBusqueda = "usuarios" | "invitados";
@@ -16,27 +21,39 @@ type CampoBusqueda =
   | "documento"
   | "nombre"
   | "apellido"
-  | "celular"
+  | "contacto"
   | "ubicacion";
 
 export default function BuscarPersonas() {
   const [tipo, setTipo] = useState<TipoBusqueda>("usuarios");
   const [campo, setCampo] = useState<CampoBusqueda>("documento");
   const [valor, setValor] = useState("");
+  const [resultados, setResultados] = useState<any[]>([]);
+ 
+  const ejecutarBusqueda = async () => {
+  const token = await storage.getToken();
 
-  const ejecutarBusqueda = () => {
-    console.log("Ejecutando búsqueda...", valor);
-    if (!valor.trim()) {
-      alert("Ingresa un valor para buscar");
-      return;
+  if (!token) {
+    Alert.alert("Error", "No hay token");
+    return;
+  }
+
+  const result = await fetch(
+    "https://backend-access.vercel.app/adi/users/check",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ tipo, campo, valor }),
     }
+  );
 
-    console.log({
-      tipo,
-      campo,
-      valor,
-    });
-  };
+  const data = await result.json();
+  setResultados(data.data || []);
+};
+
 
   return (
     <View className="h-full w-full bg-[#0B0A16]">
@@ -47,13 +64,18 @@ export default function BuscarPersonas() {
         </View>
       </View>
     )}
-
+ <ScrollView  
+        contentContainerStyle={{ paddingBottom: 140 }}
+        showsVerticalScrollIndicator={false}>
+  
      <View
       className="
         bg-[#0B0A16]
         p-5
         rounded-2xl
         mx-[10%]
+        md:mx-[20%]
+        lg:mx-[25%]
         my-6
         border
         border-white/10
@@ -139,7 +161,7 @@ export default function BuscarPersonas() {
           mb-6
         "
         keyboardType={
-          campo === "documento" || campo === "celular"
+          campo === "documento" || campo === "contacto"
             ? "numeric"
             : "default"
         }
@@ -167,10 +189,24 @@ export default function BuscarPersonas() {
       </Pressable>
     </View>
 
+   <View className="mt-6 mx-[10%]
+        md:mx-[20%]
+        lg:mx-[25%]
+        ">
+        {resultados.length === 0 ? (
+          <Text className="text-gray-400 text-center">
+            No hay resultados
+          </Text>
+        ) : (
+          resultados.map((item, index) => (
+            <ResultadoPersona key={index} item={item} />
+          ))
+        )}
+      </View>
+ </ScrollView>
 
  {Platform.OS !== 'web' && (
     <View 
-
     className='bg-[#04020A]'
      style={{
       position: "absolute",
@@ -187,7 +223,6 @@ export default function BuscarPersonas() {
         style={{  opacity: 0.15}}
         className="flex-row items-center px-8 py-2 mb-1"
       />
- 
       <ParteDeAbajo />
     </View>
   )}

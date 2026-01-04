@@ -297,7 +297,7 @@ useEffect(() => {
 }, [id, contar]);
 
     return (
-      <View className="flex-1 bg-[#04020a]   w-full">
+      <View className="flex-1 bg-[#0B0A16]   w-full">
         <ScrollView>
                 {Platform.OS !== 'web' && (
               <View className="pt-6 bg-zinc-900">

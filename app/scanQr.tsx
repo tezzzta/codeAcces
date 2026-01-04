@@ -13,7 +13,7 @@ import {
   Image
 } from "react-native";
 import type { Credencial } from "../store/type";
-
+import * as storage from '../utils/auth';
 import {estadoUsuario} from '../store/state'
 import { LinearGradient } from "expo-linear-gradient";
 import { CameraView, Camera } from "expo-camera";
@@ -55,7 +55,7 @@ export default function EscanearQR() {
   }, []);
 
   const fetchValidacion = async (code?: string) => {
-
+  const token = await storage.getToken();
   const qr = code ?? qrData;
   if (qr === "") return;
   setLoadingLogin(true);
@@ -63,8 +63,9 @@ export default function EscanearQR() {
     // console.log("Enviando fetch con qrData", qr, "***");
     const resultado = await fetch('https://backend-access.vercel.app/adi/access/find', {
       method: 'POST',
-      credentials: "include",
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 
+                Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({ qr_code: qr })
     });
       setLoadingLogin(false);
@@ -91,6 +92,7 @@ export default function EscanearQR() {
     Alert.alert("Error", "Usuario no identificado");
     return;
   }
+  const token = await storage.getToken();
 
   try {
     const response = await fetch(
@@ -98,7 +100,9 @@ export default function EscanearQR() {
       {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+         },
         body: JSON.stringify({ user_id: user_id, access_id: access_id }),
       }
     );

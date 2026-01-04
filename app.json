@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fast Access",
-    "slug": "Fast-Access",
+    "slug": "my-expo-app",
     "version": "1.0.0",
     "web": {
       "build": "metro",

@@ -151,6 +151,7 @@ export default function AccessForm() {
          const response = await fetch('https://backend-access.vercel.app/api/access',{
 
           method: "POST",
+          //esta vaina toca revisarla
                headers: { "Content-Type": "application/json", "Authorization":"Bearer" + " " + await token },
               body: JSON.stringify({
               motivo: acceso.motivo,
@@ -202,7 +203,7 @@ export default function AccessForm() {
                 </View>
               </View>
             )}
-     <ScrollView className="flex-1 bg-[#04020A] px-4 pt-1">
+     <ScrollView className="flex-1 bg-[#0B0A16] px-4 pt-1">
 
         
   {/* Título */}

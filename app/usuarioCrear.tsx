@@ -11,6 +11,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { ParteDeAbajo } from "../components/PartedeAbajo";
 import { BottonToIndex } from "components/BotonToIndex";
+import * as storage from '../utils/auth';
 
 
 export default function usuarioCrear() {
@@ -32,14 +33,7 @@ export default function usuarioCrear() {
     alert("Completa todos los campos");
     return;
   }
-
-  console.log("Creando usuario con datos:", {
-    nickname: nombre,
-    documento,
-    contacto: celular,
-    ubicacion,
-    password
-  });
+  const token = await storage.getToken();
   try {
     const fecha = new Date();
     const resultado = await fetch(
@@ -47,7 +41,9 @@ export default function usuarioCrear() {
       {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+         },
         body: JSON.stringify({
           nickname: nombre,
           documento,

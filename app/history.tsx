@@ -134,8 +134,7 @@ export default function HistorialAccesos() {
           </Text>
         </Pressable>
 
-        {/* Contenido expandido */}
-        {isExpanded && (
+         {isExpanded && (
           <View className="mt-3">
 
             <Text className="text-gray-300 text-sm">
@@ -181,7 +180,7 @@ export default function HistorialAccesos() {
   };
 
   return (
-    <View className="flex-1 bg-[#04020A]">
+    <View className="flex-1 bg-[#0B0A16]">
          
 {Platform.OS !== 'web' && (
               <View className="pt-6 bg-zinc-900">
@@ -289,6 +288,8 @@ export default function HistorialAccesos() {
             mode="date"
           />
 
+
+ 
         <View className="mx-auto mt-2"
         >
          <Pressable onPress={threFetch} className="p-2">

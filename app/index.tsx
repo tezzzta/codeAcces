@@ -82,7 +82,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
 //
 
   return (
-    <View className="flex-1 bg-[#04020a]"
+    <View className="flex-1 bg-[#0B0A16]"
     
     >
       <View className="flex items-center justify-center px-4 mt-10"
@@ -90,7 +90,7 @@ const setAccesos = useAccesosStore((state)=> state.setAccesos)
         <Text
           className={
             Platform.OS === 'web'
-              ? 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-[8%] mb-[1px] lg:mb-[2%] lg:mt-[2%]'
+              ? 'text-[#F5F5F5] text-[42px] font-semibold text-center mt-[8%] mb-[2%] lg:mb-[2%] lg:mt-[2%]'
               : 'text-[#F5F5F5] text-[30px] font-semibold text-center mt-[8%] mb-[5%]'
           }
         >
